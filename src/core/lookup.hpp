@@ -1,22 +1,15 @@
-#ifndef LOOKUP_HPP
-#define LOOKUP_HPP
+export module core.lookup;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.print;
 
+export extern "C++" {
 // Finding things in the game: interfaces, signatures and RIP-relative globals.
 //
 // Every lookup returns std::expected instead of a raw pointer, so a failure
 // carries a message and the caller has to decide what to do with it (abort
 // startup cleanly, or skip one feature) instead of crashing on a null pointer.
-
-#include <cstdint>
-#include <expected>
-#include <format>
-#include <string>
-
-#include <dlfcn.h>
-
-#include "libsigscan/libsigscan.h"
-#include "core/memory.hpp"
-#include "core/print.hpp"
 
 namespace lookup {
 
@@ -87,5 +80,4 @@ Result<T*> deref(std::uintptr_t address, const char* what) {
 }
 
 } // namespace lookup
-
-#endif
+}

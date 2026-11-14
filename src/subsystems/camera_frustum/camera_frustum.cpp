@@ -1,11 +1,16 @@
-#include "gui/config.hpp"
+export module subsystems.camera_frustum.camera_frustum;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import sdk.classes.player;
+export import core.math;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.input;
+export import sdk.interfaces.engine_trace;
 
-#include "sdk/classes/player.hpp"
-#include "core/math.hpp"
+export extern "C++" {
 
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/input.hpp"
-#include "sdk/interfaces/engine_trace.hpp"
+
 
 void trace_hull(Vec3 vecStart, Vec3 vecEnd, Vec3 vecHullMin, Vec3 vecHullMax, unsigned int mask) {
 	ray_t ray = engine_trace->init_ray(&vecStart, &vecEnd, &vecHullMin, &vecHullMax);
@@ -59,5 +64,7 @@ void update_camera_frustum(view_setup* setup) {
     
     setup->origin = end;
   }
+
+}
 
 }

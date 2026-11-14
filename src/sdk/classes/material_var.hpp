@@ -1,9 +1,12 @@
-#ifndef MATERIAL_VAR_HPP
-#define MATERIAL_VAR_HPP
+export module sdk.classes.material_var;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "core/vec.hpp"
 
 class MaterialVar {
 public:
@@ -13,4 +16,5 @@ public:
   }
 };
 
-#endif
+
+}

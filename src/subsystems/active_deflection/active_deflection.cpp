@@ -1,21 +1,25 @@
-#include "subsystems/active_deflection/active_deflection.hpp"
+export module subsystems.active_deflection.active_deflection;
+export import std.compat;
+export import core.sys;
+export import subsystems.active_deflection.active_deflection_hpp;
+export import core.math;
+export import sdk.interfaces.client;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.engine_trace;
+export import sdk.interfaces.convar_system;
+export import gui.config;
+export import sdk.classes.player;
+export import sdk.classes.weapon;
+export import core.entity_cache;
 
-#include <cmath>
+export extern "C++" {
 
-#include "core/math.hpp"
 
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/engine_trace.hpp"
-#include "sdk/interfaces/convar_system.hpp"
 
-#include "gui/config.hpp"
-#include "sdk/classes/player.hpp"
-#include "sdk/classes/weapon.hpp"
 
-#include "core/entity_cache.hpp"
 
-static bool is_projectile_visible(Player* localplayer, Entity* projectile) {
+
+inline bool is_projectile_visible(Player* localplayer, Entity* projectile) {
   Vec3 start_pos = localplayer->get_shoot_pos();
   Vec3 target_pos = projectile->get_origin();
 
@@ -34,7 +38,7 @@ static bool is_projectile_visible(Player* localplayer, Entity* projectile) {
   return false;
 }
 
-static bool is_projectile_type_enabled(projectile_type type) {
+inline bool is_projectile_type_enabled(projectile_type type) {
   switch (type) {
   case projectile_type::ROCKET:
     return config.deflection.projectiles.rockets;
@@ -142,4 +146,6 @@ void run_active_deflection(user_cmd* user_cmd, Vec3 original_view_angles) {
     user_cmd->buttons |= IN_ATTACK2;
     break;
   }
+}
+
 }

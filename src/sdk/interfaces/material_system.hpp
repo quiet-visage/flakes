@@ -1,12 +1,15 @@
-#ifndef MATERIAL_SYSTEM_HPP
-#define MATERIAL_SYSTEM_HPP
+export module sdk.interfaces.material_system;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.interfaces.render_context;
+export import sdk.classes.material;
+export import sdk.classes.keyvalues;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "render_context.hpp"
 
-#include "sdk/classes/material.hpp"
-#include "sdk/classes/keyvalues.hpp"
 
 class MaterialSystem {
 public:
@@ -25,6 +28,7 @@ public:
   
 };
 
-inline static MaterialSystem* material_system;
+inline MaterialSystem* material_system;
 
-#endif
+
+}

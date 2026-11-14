@@ -1,13 +1,19 @@
-#include "imgui/imgui.h"
+export module subsystems.spatial_telemetry.spatial_telemetry;
+export import std.compat;
+export import core.sys;
+export import core.entity_cache;
+export import gui.config;
+export import sdk.interfaces.debug_overlay;
+export import sdk.classes.player;
 
-#include "core/entity_cache.hpp"
+export extern "C++" {
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/debug_overlay.hpp"
 
-#include "sdk/classes/player.hpp"
+
 
 void draw_players_imgui() {
   std::lock_guard<std::recursive_mutex> lock(cache_mutex);
+}
+
 }

@@ -1,8 +1,11 @@
-#ifndef STEAM_CLIENT_HPP
-#define STEAM_CLIENT_HPP
+export module sdk.interfaces.steam_client;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
 class SteamClient {
 public:
   /* Steam Pipe Handle */ int create_steam_pipe(void) {
@@ -18,6 +21,7 @@ public:
   }
 };
 
-inline static SteamClient* steam_client;
+inline SteamClient* steam_client;
 
-#endif 
+
+}

@@ -1,8 +1,11 @@
-#ifndef STEAM_FRIENDS_HPP
-#define STEAM_FRIENDS_HPP
+export module sdk.interfaces.steam_friends;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
 // https://github.com/rei-2/Amalgam/blob/c1c6bf64d739538b48a301ddc5e1a988cb9b479c/Amalgam/src/SDK/Definitions/Steam/SteamClientPublic.h#L224
 enum EAccountType {
   k_EAccountTypeInvalid = 0,			
@@ -90,6 +93,7 @@ public:
   }
 };
 
-inline static SteamFriends* steam_friends;
+inline SteamFriends* steam_friends;
 
-#endif
+
+}

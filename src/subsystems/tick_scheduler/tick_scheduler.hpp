@@ -1,17 +1,16 @@
-#ifndef TICK_SCHEDULER_HPP
-#define TICK_SCHEDULER_HPP
+export module subsystems.tick_scheduler.tick_scheduler_hpp;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import gui.menu;
+export import hooks.cl_move_hpp;
 
-#include "imgui/dearimgui.hpp"
+export extern "C++" {
 
-#include "gui/config.hpp"
-#include "gui/menu.hpp"
+inline bool choke_is_reached = false;
+inline int choked_ticks = 0;
 
-#include "hooks/cl_move.hpp"
-
-static bool choke_is_reached = false;
-static int choked_ticks = 0;
-
-static void choke_current_tick(void) {
+inline void choke_current_tick(void) {
   if (config.simulation.directives.tick_scheduler == false) return;
 
   // https://8dcc.github.io/reversing/reversing-tf2-bsendpacket.html
@@ -29,7 +28,7 @@ static void choke_current_tick(void) {
   }  
 }
 
-static void dispatch_buffered_ticks(float accumulated_extra_samples) {
+inline void dispatch_buffered_ticks(float accumulated_extra_samples) {
   if (config.simulation.directives.tick_scheduler == false) return;
   
   if (menu_focused == false && ImGui::IsImGuiFullyInitialized() &&
@@ -47,4 +46,4 @@ static void dispatch_buffered_ticks(float accumulated_extra_samples) {
 
 }
 
-#endif
+}

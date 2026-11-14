@@ -1,9 +1,12 @@
-#ifndef CAPTURE_FLAG_HPP
-#define CAPTURE_FLAG_HPP
+export module sdk.classes.capture_flag;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.classes.entity;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "entity.hpp"
 
 enum flag_status {
   HOME = 0,
@@ -14,9 +17,10 @@ enum flag_status {
 class CaptureFlag : public Entity {
 public:
   enum flag_status get_status(void) {
-    return (flag_status)mem::read<int>(this, NETVAR_OFFSET("DT_CaptureFlag", "m_nFlagStatus", 0xC48));
+    return (flag_status)mem::read<int>(this, netvar_offset<"DT_CaptureFlag", "m_nFlagStatus", 0xC48>());
   }
   
 };
 
-#endif 
+
+}

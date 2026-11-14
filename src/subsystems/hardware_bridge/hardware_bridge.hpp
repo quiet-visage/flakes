@@ -1,28 +1,24 @@
-#ifndef HARDWARE_BRIDGE_HPP
-#define HARDWARE_BRIDGE_HPP
+export module subsystems.hardware_bridge.hardware_bridge_hpp;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import core.print;
 
-#include <curl/curl.h>
-#include <thread>
+export extern "C++" {
 
-#include "gui/config.hpp"
+inline CURL* curl = nullptr;
+inline bool curl_init = false;
 
-#include "core/print.hpp"
+inline std::string response_string = "";
+inline std::string header_string = "";
 
-static CURL* curl = nullptr;
-static bool curl_init = false;
-
-static std::string response_string = "";
-static std::string header_string = "";
-
-
-size_t curl_write_function(void* ptr, size_t size, size_t nmemb, std::string* data) {
+inline size_t curl_write_function(void* ptr, size_t size, size_t nmemb, std::string* data) {
   data->append((char*)ptr, size * nmemb);
   return size * nmemb;
 }
 
-
-static void init_curl(void) {
-  static struct curl_slist* list = NULL;
+inline void init_curl(void) {
+  static struct curl_slist* list = nullptr;
 
   if (curl != nullptr) {
     return;
@@ -53,7 +49,7 @@ static void init_curl(void) {
 
 }
 
-static void dispatch_hardware_telemetry(int intensity = config.diagnostics.intensity, int duration = config.diagnostics.duration, DiagnosticsConfig::BridgeActuationMode operation = config.diagnostics.operation) {
+inline void dispatch_hardware_telemetry(int intensity = config.diagnostics.intensity, int duration = config.diagnostics.duration, DiagnosticsConfig::BridgeActuationMode operation = config.diagnostics.operation) {
   if (curl == nullptr) {
     init_curl();
   }
@@ -78,4 +74,4 @@ static void dispatch_hardware_telemetry(int intensity = config.diagnostics.inten
   }).detach();
 }
 
-#endif
+}

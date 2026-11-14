@@ -1,9 +1,12 @@
-#ifndef PLAYER_LIST_HPP
-#define PLAYER_LIST_HPP
+export module sdk.interfaces.entity_list;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.interfaces.engine;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "sdk/interfaces/engine.hpp"
 
 class Entity;
 class Player;
@@ -47,6 +50,7 @@ public:
   }
 };
 
-static inline EntityList* entity_list;
+inline EntityList* entity_list;
 
-#endif
+
+}

@@ -1,5 +1,8 @@
-#ifndef GAME_EVENT_MANAGER_HPP
-#define GAME_EVENT_MANAGER_HPP
+export module sdk.interfaces.game_event_manager;
+export import std.compat;
+export import core.sys;
+
+export extern "C++" {
 
 class IGameEventListener;
 
@@ -43,6 +46,7 @@ public:
   virtual GameEvent* unserialize_event(void* buf) = 0;
 };
 
-inline static GameEventManager* game_event_manager;
+inline GameEventManager* game_event_manager;
 
-#endif
+
+}

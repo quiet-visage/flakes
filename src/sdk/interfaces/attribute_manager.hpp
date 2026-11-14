@@ -1,9 +1,12 @@
-#ifndef ATTRIBUTE_MANAGER_HPP
-#define ATTRIBUTE_MANAGER_HPP
+export module sdk.interfaces.attribute_manager;
+export import std.compat;
+export import core.sys;
+
+export extern "C++" {
 
 class Entity;
 
-static float (*attribute_hook_value_float_original)(float, const char*, Entity*, void*, bool);
+inline float (*attribute_hook_value_float_original)(float, const char*, Entity*, void*, bool);
 
 class AttributeManager {
 public:
@@ -12,6 +15,7 @@ public:
   }  
 };
 
-inline static AttributeManager* attribute_manager = new AttributeManager();
+inline AttributeManager* attribute_manager = new AttributeManager();
 
-#endif
+
+}

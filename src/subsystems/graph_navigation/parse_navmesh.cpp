@@ -1,11 +1,14 @@
-#include "subsystems/graph_navigation/navmesh.hpp"
+export module subsystems.graph_navigation.parse_navmesh;
+export import std.compat;
+export import core.sys;
+export import subsystems.graph_navigation.navmesh;
+export import gui.config;
+export import core.print;
 
-#include <fstream>
-#include <cstdint>
+export extern "C++" {
 
-#include "gui/config.hpp"
 
-#include "core/print.hpp"
+
 
 std::string level_path_to_map_name(const char* level_path) {
   if (level_path == nullptr) return "";
@@ -260,3 +263,5 @@ void parse_navmesh(const char* level_path) {
 }
 
 
+
+}

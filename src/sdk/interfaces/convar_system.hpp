@@ -1,9 +1,12 @@
-#ifndef CONVAR_SYSTEM_HPP
-#define CONVAR_SYSTEM_HPP
+export module sdk.interfaces.convar_system;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.classes.convar;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "sdk/classes/convar.hpp"
 
 class ConvarSystem {
 public:
@@ -13,6 +16,7 @@ public:
 
 };
 
-inline static ConvarSystem* convar_system;
+inline ConvarSystem* convar_system;
 
-#endif
+
+}

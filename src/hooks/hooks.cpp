@@ -1,13 +1,16 @@
-#include <dlfcn.h>
-#include <sys/mman.h>
+export module hooks.hooks;
+export import std.compat;
+export import core.sys;
+export import core.print;
 
-#include "core/print.hpp"
+export extern "C++" {
 
-void* get_interface(const char* lib_path, const char* version) {
+
+inline void* get_interface(const char* lib_path, const char* version) {
   void* lib_handle = dlopen(lib_path, RTLD_NOLOAD | RTLD_NOW);
   if (!lib_handle) {
     print("Failed to load %s\n", lib_path);
-    return NULL;
+    return nullptr;
   }
 
   print("%s loaded at %p\n", lib_path, lib_handle);
@@ -19,16 +22,16 @@ void* get_interface(const char* lib_path, const char* version) {
   
   if (!create_interface) {
     print("Failed to get CreateInterface\n");
-    return NULL;
+    return nullptr;
   }
 
   print("%s factory found at %p\n", lib_path, create_interface);
 
-  void* interface =  create_interface(version, NULL);
+  void* interface =  create_interface(version, nullptr);
     
   if (!interface) {
     print("Failed to get %s interface\n", version);
-    return NULL;
+    return nullptr;
   }
 
   print("%s interface found at %p\n", version, interface);
@@ -36,13 +39,13 @@ void* get_interface(const char* lib_path, const char* version) {
   return interface;
 }
 
-bool write_to_table(void** vtable, int index, void* func) {
+inline bool write_to_table(void** vtable, int index, void* func) {
 
   const long page_size = sysconf(_SC_PAGESIZE);
 
   // Compute the page containing the specific vtable[index] entry
   void** entry_addr = &vtable[index];
-  void* entry_page = (void*)((__uint64_t)entry_addr & ~(page_size - 1));
+  void* entry_page = (void*)((uint64_t)entry_addr & ~(page_size - 1));
   print("vfunc table entry %d page found at %p\n", index, entry_page);
 
   if (mprotect(entry_page, page_size, PROT_READ | PROT_WRITE) != 0) {
@@ -60,7 +63,7 @@ bool write_to_table(void** vtable, int index, void* func) {
   return true;
 }
 
-bool sdl_hook(void* lib_handle, const char* func_name, void* hook, void** original) {
+inline bool sdl_hook(void* lib_handle, const char* func_name, void* hook, void** original) {
   void* func = dlsym(lib_handle, func_name);
 
   if (!func) {
@@ -86,7 +89,7 @@ bool sdl_hook(void* lib_handle, const char* func_name, void* hook, void** origin
   return true;
 }
 
-bool restore_sdl_hook(void* lib_handle, const char* func_name, void* original) {
+inline bool restore_sdl_hook(void* lib_handle, const char* func_name, void* original) {
   void *func = dlsym(lib_handle, func_name);
 
   if (!func) {
@@ -98,4 +101,6 @@ bool restore_sdl_hook(void* lib_handle, const char* func_name, void* original) {
   *(void **)((unsigned long)func + 6 + offset) = original;
 
   return true;
+}
+
 }

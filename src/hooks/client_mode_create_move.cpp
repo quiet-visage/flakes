@@ -1,27 +1,32 @@
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/engine.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/convar_system.hpp"
+export module hooks.client_mode_create_move;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.client;
+export import sdk.interfaces.engine;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.convar_system;
+export import subsystems.tick_scheduler.tick_scheduler_hpp;
+export import sdk.classes.player;
+export import imgui.dearimgui;
+export import gui.config;
+export import core.print;
+export import subsystems.vector_targeting.vector_targeting;
+export import subsystems.active_deflection.active_deflection;
+export import subsystems.locomotion.locomotion;
+export import subsystems.graph_navigation.parse_navmesh;
+export import subsystems.graph_navigation.graph_navigation;
+export import subsystems.state_prediction.state_prediction;
+export import subsystems.tick_scheduler.tick_scheduler;
 
-#include "subsystems/tick_scheduler/tick_scheduler.hpp"
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
 
-#include "imgui/dearimgui.hpp"
 
-#include "gui/config.hpp"
 
-#include "core/print.hpp"
 
-#include "subsystems/vector_targeting/vector_targeting.cpp"
-#include "subsystems/active_deflection/active_deflection.cpp"
-#include "subsystems/locomotion/locomotion.cpp"
-#include "subsystems/graph_navigation/parse_navmesh.cpp"
-#include "subsystems/graph_navigation/graph_navigation.cpp"
-#include "subsystems/state_prediction/state_prediction.cpp"
-#include "subsystems/tick_scheduler/tick_scheduler.cpp"
 
-bool (*client_mode_create_move_original)(void*, float, user_cmd*);
+
+inline bool (*client_mode_create_move_original)(void*, float, user_cmd*);
 
 void movement_fix(user_cmd* user_cmd, Vec3 original_view_angle, float original_forward_move, float original_side_move) {
   float yaw_delta = user_cmd->view_angles.y - original_view_angle.y;
@@ -53,7 +58,7 @@ void movement_fix(user_cmd* user_cmd, Vec3 original_view_angle, float original_f
 
 // Called approx every frame.
 // Only valid user commands are sent approx 66 times a second
-bool client_mode_create_move_hook(void* me, float sample_time, user_cmd* user_cmd) {
+inline bool client_mode_create_move_hook(void* me, float sample_time, user_cmd* user_cmd) {
   bool rc = client_mode_create_move_original(me, sample_time, user_cmd);
   
   if (user_cmd == nullptr || user_cmd->command_number == 0 || user_cmd->tick_count <= 0) {
@@ -66,7 +71,7 @@ bool client_mode_create_move_hook(void* me, float sample_time, user_cmd* user_cm
   
   Player* localplayer = entity_list->get_localplayer();  
   if (localplayer == nullptr) {
-    print("localplayer is NULL\n");
+    print("localplayer is nullptr\n");
     return rc;
   }
 
@@ -125,4 +130,6 @@ bool client_mode_create_move_hook(void* me, float sample_time, user_cmd* user_cm
     return false;
   else
     return rc;
+}
+
 }

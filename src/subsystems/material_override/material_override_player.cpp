@@ -1,25 +1,31 @@
-#include "subsystems/material_override/material_override.hpp"
+export module subsystems.material_override.material_override_player;
+export import std.compat;
+export import core.sys;
+export import subsystems.material_override.material_override_hpp;
+export import gui.config;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.material_system;
+export import sdk.interfaces.render_view;
+export import sdk.interfaces.model_render;
+export import sdk.classes.player;
 
-#include "gui/config.hpp"
+export extern "C++" {
+struct ModelRenderInfo;
 
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/material_system.hpp"
-#include "sdk/interfaces/render_view.hpp"
-#include "sdk/interfaces/model_render.hpp"
 
-#include "sdk/classes/player.hpp"
+
 
 void apply_player_material_override(Player* player, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
 
   Player* localplayer = entity_list->get_localplayer();
-  if (localplayer == nullptr || player == nullptr) DME_RETURN;
+  if (localplayer == nullptr || player == nullptr) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
   
-  if (player == localplayer && config.materials.player.local == false) DME_RETURN; // Ignore Local Player
-  if (player->is_dormant()) DME_RETURN;
-  if (player->get_lifestate() != 1) DME_RETURN; // Ignore Dead
-  if (player->get_team() != localplayer->get_team() && config.materials.player.enemy == false && !player->is_friend()) DME_RETURN; // Ignore Enemy
-  if (player->get_team() == localplayer->get_team() && player != localplayer && config.materials.player.team == false && !player->is_friend()) DME_RETURN; // Ignore Team
-  if (player->is_friend() && config.materials.player.friends == false && (config.materials.player.team == false && player->get_team() == localplayer->get_team())) DME_RETURN; // Ignore Friends
+  if (player == localplayer && config.materials.player.local == false) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Local Player
+  if (player->is_dormant()) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
+  if (player->get_lifestate() != 1) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Dead
+  if (player->get_team() != localplayer->get_team() && config.materials.player.enemy == false && !player->is_friend()) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Enemy
+  if (player->get_team() == localplayer->get_team() && player != localplayer && config.materials.player.team == false && !player->is_friend()) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Team
+  if (player->is_friend() && config.materials.player.friends == false && (config.materials.player.team == false && player->get_team() == localplayer->get_team())) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Friends
 
   RenderContext* render_context = material_system->get_render_context();
 
@@ -159,4 +165,6 @@ void apply_player_material_override(Player* player, void* me, void* state, Model
   }
   
   player->set_invisibility(old_invis);
+}
+
 }

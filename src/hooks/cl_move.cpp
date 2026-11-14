@@ -1,16 +1,23 @@
-#include "hooks/cl_move.hpp"
+export module hooks.cl_move;
+export import std.compat;
+export import core.sys;
+export import hooks.cl_move_hpp;
+export import subsystems.tick_scheduler.tick_scheduler_hpp;
+export import imgui.dearimgui;
+export import gui.config;
+export import core.print;
 
-#include "subsystems/tick_scheduler/tick_scheduler.hpp"
+export extern "C++" {
 
-#include "imgui/dearimgui.hpp"
 
-#include "gui/config.hpp"
 
-#include "core/print.hpp"
+
 
 // Called 66 times a second by the game
-void cl_move_hook(float accumulated_extra_samples, bool final_tick) {
+inline void cl_move_hook(float accumulated_extra_samples, bool final_tick) {
   dispatch_buffered_ticks(accumulated_extra_samples);
 
   cl_move_original(accumulated_extra_samples, final_tick);      
+}
+
 }

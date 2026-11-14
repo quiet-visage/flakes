@@ -1,12 +1,15 @@
-#ifndef SPATIAL_TELEMETRY_HPP
-#define SPATIAL_TELEMETRY_HPP
+export module subsystems.spatial_telemetry.spatial_telemetry_hpp;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.surface;
 
-#include "sdk/interfaces/surface.hpp"
+export extern "C++" {
 
-inline static unsigned long telemetry_player_font;
-inline static unsigned long telemetry_entity_font;
 
-static void draw_outline_rectangle(Vec3 screen, Vec3 screen_offset, float width_fraction, RGBA color) {
+inline unsigned long telemetry_player_font;
+inline unsigned long telemetry_entity_font;
+
+inline void draw_outline_rectangle(Vec3 screen, Vec3 screen_offset, float width_fraction, RGBA color) {
   float box_offset = (screen.y - screen_offset.y)*width_fraction;
 
   /* shadow box */
@@ -47,4 +50,5 @@ static void draw_outline_rectangle(Vec3 screen, Vec3 screen_offset, float width_
   /* actual box */
 }
 
-#endif
+
+}

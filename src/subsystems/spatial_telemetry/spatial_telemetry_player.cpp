@@ -1,23 +1,28 @@
-#include "subsystems/spatial_telemetry/spatial_telemetry.hpp"
+export module subsystems.spatial_telemetry.spatial_telemetry_player;
+export import std.compat;
+export import core.sys;
+export import subsystems.spatial_telemetry.spatial_telemetry_hpp;
+export import gui.config;
+export import core.vec;
+export import sdk.classes.player;
+export import core.math;
+export import subsystems.vector_targeting.vector_targeting_hpp;
+export import sdk.interfaces.surface;
+export import sdk.interfaces.render_view;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.engine;
+export import sdk.interfaces.convar_system;
+export import core.print;
 
-#include "gui/config.hpp"
-#include "core/vec.hpp"
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
 
-#include "core/math.hpp"
 
-#include "subsystems/vector_targeting/vector_targeting.hpp"
 
-#include "sdk/interfaces/surface.hpp"
-#include "sdk/interfaces/render_view.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/engine.hpp"
-#include "sdk/interfaces/convar_system.hpp"
 
-#include "core/print.hpp"
 
-#define WIDTH_FRACTION 0.35
+
+inline constexpr auto WIDTH_FRACTION = 0.35;
 
 void draw_player_bounding_box(Vec3 screen, Vec3 screen_offset, Player* player, Player* localplayer) {
   if (config.telemetry.player.box == true) {
@@ -161,4 +166,6 @@ void render_player_telemetry(unsigned int i, Player* player) {
   draw_player_annotations(screen, screen_offset, player, i);
   draw_player_identifier(screen, screen_offset, player, i);
   draw_player_skeleton(player);
+}
+
 }

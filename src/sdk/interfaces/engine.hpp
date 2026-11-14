@@ -1,12 +1,15 @@
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+export module sdk.interfaces.engine;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
 class Player;
 struct player_info;
 
-#include "core/vec.hpp"
 
 class Engine {
 public:
@@ -44,7 +47,8 @@ public:
   }
 };
 
-static inline Engine* engine;
+inline Engine* engine;
 
 
-#endif
+
+}

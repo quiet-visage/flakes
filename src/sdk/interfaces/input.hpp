@@ -1,9 +1,12 @@
-#ifndef INPUT_HPP
-#define INPUT_HPP
+export module sdk.interfaces.input;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.interfaces.client;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "client.hpp"
 
 struct CameraThirdData_t {
   float pitch;
@@ -14,7 +17,7 @@ struct CameraThirdData_t {
   Vec3 hull_max;
 };
 
-static user_cmd* (*get_user_cmd_original)(void*, int sequence_number);
+inline user_cmd* (*get_user_cmd_original)(void*, int sequence_number);
 
 class Input {
 public:
@@ -43,6 +46,7 @@ public:
   user_cmd* commands;
 };
 
-inline static Input* input;
+inline Input* input;
 
-#endif
+
+}

@@ -1,18 +1,22 @@
-#include <unistd.h>
+export module hooks.intro_menu_on_tick;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.global_vars;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.engine;
+export import sdk.classes.player;
+export import core.print;
 
-#include "sdk/interfaces/global_vars.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/engine.hpp"
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
 
-#include "core/print.hpp"
 
-void (*intro_menu_on_tick_original)(void*) = NULL;
 
-static float last_time2 = 0.0;
+inline void (*intro_menu_on_tick_original)(void*) = nullptr;
 
-void intro_menu_on_tick_hook(void* me) {
+inline float last_time2 = 0.0;
+
+inline void intro_menu_on_tick_hook(void* me) {
   intro_menu_on_tick_original(me);
   return;
 
@@ -52,4 +56,6 @@ void intro_menu_on_tick_hook(void* me) {
   intro_menu_on_tick_original(me);
   */
   
+}
+
 }

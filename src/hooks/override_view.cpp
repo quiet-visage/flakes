@@ -1,17 +1,22 @@
-#include "core/vec.hpp"
+export module hooks.override_view;
+export import std.compat;
+export import core.sys;
+export import core.vec;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.convar_system;
+export import gui.config;
+export import sdk.classes.player;
+export import subsystems.camera_frustum.camera_frustum;
 
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/convar_system.hpp"
+export extern "C++" {
 
-#include "gui/config.hpp"
 
-#include "sdk/classes/player.hpp"
 
-#include "subsystems/camera_frustum/camera_frustum.cpp"
 
-void (*override_view_original)(void*, view_setup*);
 
-void override_view_hook(void* me, view_setup* setup) {
+inline void (*override_view_original)(void*, view_setup*);
+
+inline void override_view_hook(void* me, view_setup* setup) {
   override_view_original(me, setup);
 
   Player* localplayer = entity_list->get_localplayer();
@@ -30,4 +35,6 @@ void override_view_hook(void* me, view_setup* setup) {
   }
   
   update_camera_frustum(setup);
+}
+
 }

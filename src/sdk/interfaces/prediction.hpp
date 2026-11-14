@@ -1,7 +1,10 @@
-#ifndef PREDICTION_HPP
-#define PREDICTION_HPP
+export module sdk.interfaces.prediction;
+export import std.compat;
+export import core.sys;
+export import core.vec;
 
-#include "core/vec.hpp"
+export extern "C++" {
+
 
 class MoveHelper;
 class MoveData;
@@ -67,6 +70,7 @@ public:
   float ideal_pitch;
 };
 
-inline static Prediction* prediction;
+inline Prediction* prediction;
 
-#endif
+
+}

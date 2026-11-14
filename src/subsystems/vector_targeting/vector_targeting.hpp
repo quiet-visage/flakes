@@ -1,8 +1,12 @@
-#ifndef VECTOR_TARGETING_HPP
-#define VECTOR_TARGETING_HPP
+export module subsystems.vector_targeting.vector_targeting_hpp;
+export import std.compat;
+export import core.sys;
+export import sdk.classes.player;
 
-#include "sdk/classes/player.hpp"
+export extern "C++" {
 
-inline static Player* target_player = nullptr;
 
-#endif
+inline Player* target_player = nullptr;
+
+
+}

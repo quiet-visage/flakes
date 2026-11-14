@@ -1,12 +1,11 @@
-#ifndef OFFSETS_HPP
-#define OFFSETS_HPP
+export module core.offsets;
+export import std.compat;
 
+export extern "C++" {
 // Hardcoded offsets into game objects that are NOT resolved through netvars,
 // either because they are not networked or because the networked field has
 // different semantics from what the code needs (see the notes on each).
-// Netvar-backed fields use NETVAR_OFFSET(table, prop, fallback) at the call site.
-
-#include <cstddef>
+// Netvar-backed fields use netvar_offset<table, prop, fallback>() at the call site.
 
 namespace offsets {
 
@@ -54,5 +53,4 @@ namespace convar {
 }
 
 } // namespace offsets
-
-#endif
+}

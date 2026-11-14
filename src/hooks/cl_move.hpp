@@ -1,8 +1,9 @@
-#ifndef CL_MOVE_HPP
-#define CL_MOVE_HPP
+export module hooks.cl_move_hpp;
+export import std.compat;
+export import core.sys;
 
-#include <unistd.h>
+export extern "C++" {
 
-void (*cl_move_original)(float, bool) = NULL;
+inline void (*cl_move_original)(float, bool) = nullptr;
 
-#endif
+}

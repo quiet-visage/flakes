@@ -1,23 +1,28 @@
-#include "subsystems/material_override/material_override.hpp"
+export module hooks.draw_model_execute;
+export import std.compat;
+export import core.sys;
+export import subsystems.material_override.material_override_hpp;
+export import core.vec;
+export import core.assert;
+export import gui.config;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.material_system;
+export import sdk.interfaces.model_render;
+export import sdk.interfaces.render_view;
+export import sdk.classes.material;
+export import sdk.classes.player;
+export import subsystems.material_override.material_override;
+export import core.print;
 
-#include <string.h>
+export extern "C++" {
+struct ModelRenderInfo;
 
-#include "core/vec.hpp"
-#include "core/assert.hpp"
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/material_system.hpp"
-#include "sdk/interfaces/model_render.hpp"
-#include "sdk/interfaces/render_view.hpp"
 
-#include "sdk/classes/material.hpp"
-#include "sdk/classes/player.hpp"
 
-#include "subsystems/material_override/material_override.cpp"
 
-#include "core/print.hpp"
+
 
 struct model_t {
   void* handle;
@@ -48,15 +53,17 @@ struct ModelRenderInfo {
   short instance;
 };
 
-void draw_model_execute_hook(void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {  
+inline void draw_model_execute_hook(void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {  
   if (pinfo == nullptr || pinfo->entity_index <= 0) {
-    DME_RETURN;
+    { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
   }
 
   Entity* entity = entity_list->entity_from_index(pinfo->entity_index);
   if (entity == nullptr) {
-    DME_RETURN;
+    { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
   }
 
   apply_material_override(entity, me, state, pinfo, bone_to_world);
+}
+
 }

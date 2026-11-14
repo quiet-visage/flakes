@@ -1,9 +1,11 @@
-#ifndef NAV_GRAPH_HPP
-#define NAV_GRAPH_HPP
+export module subsystems.graph_navigation.nav_graph;
+export import std.compat;
+export import core.sys;
+export import subsystems.graph_navigation.navmesh;
 
-#include "micropather/micropather.h"
+export extern "C++" {
 
-#include "subsystems/graph_navigation/navmesh.hpp"
+
 
 class NavGraph : public micropather::Graph {
 public:
@@ -102,4 +104,5 @@ private:
 
 };
 
-#endif
+
+}

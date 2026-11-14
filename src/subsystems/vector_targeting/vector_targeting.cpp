@@ -1,21 +1,25 @@
-#include <algorithm>
+export module subsystems.vector_targeting.vector_targeting;
+export import std.compat;
+export import core.sys;
+export import subsystems.vector_targeting.vector_targeting_hpp;
+export import subsystems.observer_telemetry.observer_telemetry;
+export import core.math;
+export import sdk.interfaces.client;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.engine;
+export import sdk.interfaces.engine_trace;
+export import sdk.interfaces.convar_system;
+export import gui.config;
+export import sdk.classes.player;
+export import core.entity_cache;
+export import core.print;
 
-#include "subsystems/vector_targeting/vector_targeting.hpp"
-#include "subsystems/observer_telemetry/observer_telemetry.hpp"
+export extern "C++" {
 
-#include "core/math.hpp"
 
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/engine.hpp"
-#include "sdk/interfaces/engine_trace.hpp"
-#include "sdk/interfaces/convar_system.hpp"
 
-#include "gui/config.hpp"
-#include "sdk/classes/player.hpp"
 
-#include "core/entity_cache.hpp"
-#include "core/print.hpp"
+
 
 bool is_player_visible(Player* localplayer, Player* entity, int bone) {
   Vec3 target_pos = entity->get_bone_pos(bone);
@@ -203,4 +207,6 @@ void run_vector_targeting(user_cmd* user_cmd, Vec3 original_view_angles) {
       user_cmd->view_angles = (view_angles - localplayer->get_punch_angles());
 
   }
+}
+
 }

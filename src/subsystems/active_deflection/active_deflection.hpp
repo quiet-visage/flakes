@@ -1,9 +1,13 @@
-#ifndef ACTIVE_DEFLECTION_HPP
-#define ACTIVE_DEFLECTION_HPP
+export module subsystems.active_deflection.active_deflection_hpp;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.client;
+export import core.vec;
 
-#include "sdk/interfaces/client.hpp"
-#include "core/vec.hpp"
+export extern "C++" {
+
 
 void run_active_deflection(user_cmd* user_cmd, Vec3 original_view_angles);
 
-#endif
+
+}

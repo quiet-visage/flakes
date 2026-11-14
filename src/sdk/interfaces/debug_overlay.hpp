@@ -1,8 +1,11 @@
-#ifndef DEBUG_OVERLAY_HPP
-#define DEBUG_OVERLAY_HPP
+export module sdk.interfaces.debug_overlay;
+export import std.compat;
+export import core.sys;
+export import core.vec;
+export import core.memory;
 
-#include "core/vec.hpp"
-#include "core/memory.hpp"
+export extern "C++" {
+
 
 class DebugOverlay {
 public:
@@ -15,6 +18,7 @@ public:
 
 };
 
-static inline DebugOverlay* overlay;
+inline DebugOverlay* overlay;
 
-#endif
+
+}

@@ -1,24 +1,19 @@
-#ifndef NAVMESH_HPP
-#define NAVMESH_HPP
+export module subsystems.graph_navigation.navmesh;
+export import std.compat;
+export import core.sys;
+export import core.math;
+export import core.vec;
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <deque>
-#include <array>
-#include <cstdint>
+export extern "C++" {
 
-#include "core/math.hpp"
 
-#include "core/vec.hpp"
 
-#define kVisitedCap 512
-#define kJumpHeight 72.0f
-#define kStepHeight 18.0f
-#define kHullHeight 83.0f
-#define kHullWidth  49.0f
-#define kZSlop      18.0f
+inline constexpr auto kVisitedCap = 512;
+inline constexpr auto kJumpHeight = 72.0f;
+inline constexpr auto kStepHeight = 18.0f;
+inline constexpr auto kHullHeight = 83.0f;
+inline constexpr auto kHullWidth = 49.0f;
+inline constexpr auto kZSlop = 18.0f;
 
 enum TFNavAttributeType : uint32_t {
   TF_NAV_INVALID = 0x00000000u,
@@ -36,9 +31,9 @@ enum TFNavAttributeType : uint32_t {
 
   TF_NAV_NO_SPAWNING = 0x02000000u,
 };
-static constexpr uint32_t NAV_MESH_NAV_BLOCKER = 0x80000000u;
+inline constexpr uint32_t NAV_MESH_NAV_BLOCKER = 0x80000000u;
 
-static constexpr uint32_t kTFBadGoalMask =
+inline constexpr uint32_t kTFBadGoalMask =
   TF_NAV_BLOCKED |
   TF_NAV_SPAWN_ROOM_RED |
   TF_NAV_SPAWN_ROOM_BLUE |
@@ -165,7 +160,7 @@ struct Path {
   
   uint32_t last_area_id = 0;
   
-} static path;
+} inline path;
 
 struct Mesh {
   uint32_t version = 0;
@@ -272,6 +267,7 @@ struct Mesh {
     return best_nonvisited_id ? best_nonvisited_id : best_any_id;
   }
 
-} static mesh;
+} inline mesh;
 
-#endif
+
+}

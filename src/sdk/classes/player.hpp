@@ -1,35 +1,28 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+export module sdk.classes.player;
+export import std.compat;
+export import core.sys;
+export import core.offsets;
+export import core.memory;
+export import sdk.interfaces.steam_friends;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.attribute_manager;
+export import core.entity_cache;
+export import sdk.classes.entity;
+export import sdk.classes.weapon;
+export import core.vec;
+export import core.print;
+
+export extern "C++" {
 
 
 
-#include "core/offsets.hpp"
-#include "core/memory.hpp"
-#include "sdk/interfaces/steam_friends.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/attribute_manager.hpp"
 
-#include "core/entity_cache.hpp"
 
-#include "entity.hpp"
-#include "weapon.hpp"
 
-#include "core/vec.hpp"
-#include "core/print.hpp"
 
 struct user_cmd;
 
-#define	FL_ONGROUND (1<<0)
-#define FL_DUCKING (1<<1)
-#define	FL_WATERJUMP (1<<2)
-#define FL_ONTRAIN (1<<3)
-#define FL_INRAIN (1<<4)
-#define FL_FROZEN (1<<5)
-#define FL_ATCONTROLS (1<<6)
-#define	FL_CLIENT (1<<7)
-#define FL_FAKECLIENT (1<<8)
-#define	FL_INWATER (1<<9)
-#define PLAYER_FLAG_BITS 32
+inline constexpr auto PLAYER_FLAG_BITS = 32;
 
 enum class tf_class {
   UNDEFINED = 0,
@@ -210,7 +203,7 @@ enum tf_cond {
 };
 
 //Original of a hooked class function
-static bool (*in_cond_original)(void*, int);
+inline bool (*in_cond_original)(void*, int);
 
 //TODO/NOTE: Something useful would be a network variable helper.
 //           There are a lot of magical offsets to specific structures, and those offsets have a string key associated with them.
@@ -219,7 +212,7 @@ class Player : public Entity {
 public:
 
   int get_weapon_handle(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BaseCombatCharacter", "m_hActiveWeapon", 0x11D0));
+    return mem::read<int>(this, netvar_offset<"DT_BaseCombatCharacter", "m_hActiveWeapon", 0x11D0>());
   }
 
   Weapon* get_weapon(void) {
@@ -238,7 +231,7 @@ public:
   }
 
   int get_health(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_iHealth", 0xD4));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_iHealth", 0xD4>());
   }
 
   int get_max_health(void) {
@@ -246,7 +239,7 @@ public:
   }
   
   int get_default_fov(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_iDefaultFOV", 0x15E4));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_iDefaultFOV", 0x15E4>());
   }
 
   int get_fov(void) {
@@ -266,15 +259,15 @@ public:
   }
   
   void set_head_size(float size) {
-    mem::write<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flHeadScale", 0x39D8), size);
+    mem::write<float>(this, netvar_offset<"DT_TFPlayer", "m_flHeadScale", 0x39D8>(), size);
   }
 
   void set_torso_length(float length) {
-    mem::write<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flTorsoScale", 0x39DC), length);
+    mem::write<float>(this, netvar_offset<"DT_TFPlayer", "m_flTorsoScale", 0x39DC>(), length);
   }
 
   void set_taunt_cam(bool value) {
-    mem::write<bool>(this, NETVAR_OFFSET("DT_TFPlayer", "m_nForceTauntCam", 0x2414), value);
+    mem::write<bool>(this, netvar_offset<"DT_TFPlayer", "m_nForceTauntCam", 0x2414>(), value);
   }
   
   bool get_lifestate(void) {
@@ -287,11 +280,11 @@ public:
   }
 
   Vec3 get_punch_angles(void) {
-    return mem::read<Vec3>(this, NETVAR_OFFSET("DT_BasePlayer", "m_vecPunchAngle", 0x74));
+    return mem::read<Vec3>(this, netvar_offset<"DT_BasePlayer", "m_vecPunchAngle", 0x74>());
   }
 
   enum tf_class get_tf_class(void) {
-    return (enum tf_class)mem::read<int>(this, NETVAR_OFFSET("DT_TFPlayer", "m_iClass", 0x1BA0));
+    return (enum tf_class)mem::read<int>(this, netvar_offset<"DT_TFPlayer", "m_iClass", 0x1BA0>());
   }
   
   Vec3 get_bone_pos(int bone_num) {
@@ -332,7 +325,7 @@ public:
   }
   
   void set_thirdperson(bool value) {
-    mem::write<bool>(this, NETVAR_OFFSET("DT_TFPlayer", "m_nForceTauntCam", 0x2414) + offsets::player::thirdperson_from_force_taunt_cam, value);
+    mem::write<bool>(this, netvar_offset<"DT_TFPlayer", "m_nForceTauntCam", 0x2414>() + offsets::player::thirdperson_from_force_taunt_cam, value);
   }
   
   void switch_thirdperson(void) {
@@ -340,20 +333,20 @@ public:
   }
   
   bool is_thirdperson(void) {
-    return mem::read<bool>(this, NETVAR_OFFSET("DT_TFPlayer", "m_nForceTauntCam", 0x2414) + offsets::player::thirdperson_from_force_taunt_cam);
+    return mem::read<bool>(this, netvar_offset<"DT_TFPlayer", "m_nForceTauntCam", 0x2414>() + offsets::player::thirdperson_from_force_taunt_cam);
   }  
   
   void* get_shared(void) {
-    return mem::field_address(this, NETVAR_OFFSET("DT_TFPlayer", "m_Shared", 0x1E78));
+    return mem::field_address(this, netvar_offset<"DT_TFPlayer", "m_Shared", 0x1E78>());
   }
 
 
   float get_invisibility(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x1FF0));
+    return mem::read<float>(this, netvar_offset<"DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x1FF0>());
   }
 
   void set_invisibility(float value) {
-    mem::write<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x1FF0), value);
+    mem::write<float>(this, netvar_offset<"DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x1FF0>(), value);
   }
   
   bool in_cond(tf_cond condition) {
@@ -383,7 +376,7 @@ public:
   }
   
   int get_ground_entity_handle(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_hGroundEntity", 0x31C));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_hGroundEntity", 0x31C>());
   }
 
   Entity* get_ground_entity(void) {
@@ -391,11 +384,11 @@ public:
   }
 
   observer_mode_t get_observer_mode(void) {
-    return (observer_mode_t)mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_iObserverMode", 0x1654));
+    return (observer_mode_t)mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_iObserverMode", 0x1654>());
   }
 
   int get_observer_target_handle(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_hObserverTarget", 0x1658));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_hObserverTarget", 0x1658>());
   }
 
   Entity* get_observer_target(void) {
@@ -403,15 +396,15 @@ public:
   }
 
   int get_flags(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_fFlags", 0x460));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_fFlags", 0x460>());
   }
 
   float get_fov_time(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_BasePlayer", "m_flFOVTime", 0x15E0));
+    return mem::read<float>(this, netvar_offset<"DT_BasePlayer", "m_flFOVTime", 0x15E0>());
   }
 
   float get_next_attack(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_BaseCombatCharacter", "m_flNextAttack", 0x1088));
+    return mem::read<float>(this, netvar_offset<"DT_BaseCombatCharacter", "m_flNextAttack", 0x1088>());
   }
   
   bool can_shoot(Player* target_player) {
@@ -464,5 +457,6 @@ public:
   }
 };
 
-#endif
 
+
+}

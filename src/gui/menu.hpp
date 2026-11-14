@@ -1,37 +1,33 @@
-#ifndef MENU_HPP
-#define MENU_HPP
+export module gui.menu;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import subsystems.graph_navigation.navmesh;
+export import subsystems.hardware_bridge.hardware_bridge_hpp;
+export import core.print;
 
-#include <string>
-#include "gui/config.hpp"
+export extern "C++" {
 
-#include "imgui/dearimgui.hpp"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
-#include "imgui/imgui_stdlib.h"
 
-#include <SDL2/SDL_mouse.h>
 
-#include "subsystems/graph_navigation/navmesh.hpp"
-#include "subsystems/hardware_bridge/hardware_bridge.hpp"
-#include "core/print.hpp"
 
-inline static SDL_Window* sdl_window = NULL;
-inline static bool menu_focused = false;
-inline static ImFont* ui_font = nullptr;
+inline SDL_Window* sdl_window = nullptr;
+inline bool menu_focused = false;
+inline ImFont* ui_font = nullptr;
 
-alignas(8) static constexpr unsigned char google_sans_code_nerd_font_ttf[] = {
+alignas(8) inline constexpr unsigned char google_sans_code_nerd_font_ttf[] = {
 #embed "GoogleSansCodeNerdFont-Medium.ttf"
 };
 
-static void get_input(SDL_Event* event) {
+inline void get_input(SDL_Event* event) {
   ImGui::KeybindEvent(event, &config.targeting.key.waiting, &config.targeting.key.button);
   ImGui::KeybindEvent(event, &config.deflection.key.waiting, &config.deflection.key.button);
   ImGui::KeybindEvent(event, &config.viewport.camera_frustum.key.waiting, &config.viewport.camera_frustum.key.button);
   ImGui::KeybindEvent(event, &config.simulation.directives.recharge_button.waiting, &config.simulation.directives.recharge_button.button);
 }
 
-static void init_imgui_fonts(void) {
+inline void init_imgui_fonts(void) {
   ImGuiIO& io = ImGui::GetIO();
   if (!io.Fonts->Fonts.empty()) {
     return;
@@ -73,7 +69,7 @@ static void init_imgui_fonts(void) {
   }
 }
 
-static void set_imgui_theme(void) {
+inline void set_imgui_theme(void) {
   init_imgui_fonts();
 
   // Framecraft · Obsidian & Mint theme
@@ -146,7 +142,7 @@ static void set_imgui_theme(void) {
   colors[ImGuiCol_ScrollbarGrabActive]  = ImVec4(0.52f, 0.88f, 0.76f, 0.85f);
 }
 
-static void draw_kinematics_tab(void) {
+inline void draw_kinematics_tab(void) {
   ImGui::Checkbox("Enable Vector Targeting Subsystem", &config.targeting.master);
   ImGui::Separator();
   ImGui::Spacing();
@@ -226,7 +222,7 @@ static void draw_kinematics_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_telemetry_tab(void) {
+inline void draw_telemetry_tab(void) {
   ImGui::Checkbox("Enable Spatial Telemetry & HUD Projection", &config.telemetry.master);
   ImGui::SameLine();
   ImGui::Checkbox("Observer Telemetry Overlay", &config.telemetry.observer_overlay);
@@ -304,7 +300,7 @@ static void draw_telemetry_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_materials_tab(void) {
+inline void draw_materials_tab(void) {
   ImGui::Checkbox("Enable Material Pipeline & Shader Override", &config.materials.master);
   ImGui::Separator();
   ImGui::Spacing();
@@ -416,7 +412,7 @@ static void draw_materials_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_viewport_tab(void) {
+inline void draw_viewport_tab(void) {
   float col_width = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
 
   // Left Column: Camera Frustum
@@ -468,7 +464,7 @@ static void draw_viewport_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_simulation_tab(void) {
+inline void draw_simulation_tab(void) {
   float col_width = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
 
   ImGui::BeginChild("##SimulationLocomotionCard", ImVec2(col_width, 0), ImGuiChildFlags_Borders);
@@ -497,7 +493,7 @@ static void draw_simulation_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_navigation_tab(void) {
+inline void draw_navigation_tab(void) {
   ImGui::Checkbox("Enable Autonomous A* Graph Navigation", &config.navigation.master);
   ImGui::Separator();
   ImGui::Spacing();
@@ -514,7 +510,7 @@ static void draw_navigation_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_diagnostics_tab(void) {
+inline void draw_diagnostics_tab(void) {
   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.76f, 0.35f, 1.00f));
   ImGui::TextUnformatted("\xEF\x81\xB1  Runtime Introspection & Experimental Diagnostics");
   ImGui::PopStyleColor();
@@ -604,7 +600,7 @@ static void draw_diagnostics_tab(void) {
   ImGui::EndChild();
 }
 
-static void draw_tab(ImGuiStyle* style, const char* name, int* tab, int index) {
+inline void draw_tab(ImGuiStyle* style, const char* name, int* tab, int index) {
   bool selected = (*tab == index);
   if (selected) {
     ImGui::PushStyleColor(ImGuiCol_Button, style->Colors[ImGuiCol_ButtonActive]);
@@ -627,7 +623,7 @@ static void draw_tab(ImGuiStyle* style, const char* name, int* tab, int index) {
   }
 }
 
-static void draw_menu(void) {
+inline void draw_menu(void) {
   ImGuiStyle* style = &ImGui::GetStyle();
   style->WindowTitleAlign = ImVec2(0.02f, 0.5f);
 
@@ -694,4 +690,5 @@ static void draw_menu(void) {
   ImGui::End();
 }
 
-#endif
+
+}

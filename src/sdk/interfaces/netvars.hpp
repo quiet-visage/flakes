@@ -1,13 +1,12 @@
-#ifndef NETVARS_HPP
-#define NETVARS_HPP
+export module sdk.interfaces.netvars;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.client;
+export import core.print;
 
-#include <cstdint>
-#include <cstring>
-#include <string>
-#include <unordered_map>
+export extern "C++" {
 
-#include "client.hpp"
-#include "core/print.hpp"
+
 
 struct RecvTable;
 
@@ -147,10 +146,20 @@ inline NetVarManager& get_netvars() {
   return instance;
 }
 
-#define NETVAR_OFFSET(table, prop, fallback) \
-  ([]() -> int { \
-    static int _offset = get_netvars().get_offset(table, prop, fallback); \
-    return _offset; \
-  }())
 
-#endif
+template <std::size_t N>
+struct FixedString {
+  char buf[N]{};
+  consteval FixedString(const char (&s)[N]) {
+    for (std::size_t i = 0; i < N; ++i) buf[i] = s[i];
+  }
+  constexpr const char* c_str() const { return buf; }
+};
+
+template <FixedString Table, FixedString Prop, int Fallback>
+inline int netvar_offset() {
+  static int _offset = get_netvars().get_offset(Table.c_str(), Prop.c_str(), Fallback);
+  return _offset;
+}
+
+}

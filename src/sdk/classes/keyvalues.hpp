@@ -1,11 +1,11 @@
-#ifndef KEYVALUES_HPP
-#define KEYVALUES_HPP
+export module sdk.classes.keyvalues;
+export import std.compat;
+export import core.sys;
+export import core.memory;
 
-#include <cstddef>
-#include <dlfcn.h>
-#include <string.h>
+export extern "C++" {
 
-#include "core/memory.hpp"
+
 
 enum types_t {
   TYPE_NONE = 0,
@@ -20,9 +20,9 @@ enum types_t {
 };
 
 class KeyValues;
-static KeyValues* (*key_values_constructor_original)(void*, const char*);
-static void (*key_values_set_int_original)(void*, const char*, int);
-static bool (*key_values_load_from_buffer_original)(void*, const char*, const char*, void*, const char*);
+inline KeyValues* (*key_values_constructor_original)(void*, const char*);
+inline void (*key_values_set_int_original)(void*, const char*, int);
+inline bool (*key_values_load_from_buffer_original)(void*, const char*, const char*, void*, const char*);
 
 inline void* get_key_values_system() {
   static void* (*fn)() = nullptr;
@@ -39,7 +39,7 @@ inline void* get_key_values_system() {
   return fn ? fn() : nullptr;
 }
 
-void key_values_set_int_hook(void* me, const char* key, int value) {
+inline void key_values_set_int_hook(void* me, const char* key, int value) {
 
   /*
   if (strstr(key, "class")) {
@@ -111,4 +111,5 @@ private:
 
 static_assert(sizeof(KeyValues) == 0x48, "KeyValues must be 72 (0x48) bytes on 64-bit Linux");
 
-#endif
+
+}

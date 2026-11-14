@@ -1,18 +1,23 @@
-#include "subsystems/graph_navigation/navmesh.hpp"
+export module subsystems.graph_navigation.draw_navmesh;
+export import std.compat;
+export import core.sys;
+export import subsystems.graph_navigation.navmesh;
+export import subsystems.spatial_telemetry.spatial_telemetry_hpp;
+export import gui.config;
+export import sdk.interfaces.render_view;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.surface;
+export import sdk.classes.player;
+export import core.vec;
+export import core.print;
 
-#include "subsystems/spatial_telemetry/spatial_telemetry.hpp"
+export extern "C++" {
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/render_view.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/surface.hpp"
 
-#include "sdk/classes/player.hpp"
 
-#include "core/vec.hpp"
 
-#include "core/print.hpp"
+
 
 void draw_navmesh() {  
   Player* localplayer = entity_list->get_localplayer();
@@ -107,5 +112,7 @@ void draw_navmesh() {
       }
     }
   }
+
+}
 
 }

@@ -1,7 +1,9 @@
-#ifndef CLIENT_STATE_HPP
-#define CLIENT_STATE_HPP
+export module sdk.interfaces.client_state;
+export import std.compat;
+export import core.sys;
 
-#include <cstdint>
+export extern "C++" {
+
 
 struct ClockDriftMgr {
   float m_ClockOffsets[16];
@@ -61,6 +63,7 @@ public:
   bool m_bMarkedCRCsUnverified;
 };
 
-inline static ClientState* client_state;
+inline ClientState* client_state;
 
-#endif
+
+}

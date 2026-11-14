@@ -1,18 +1,18 @@
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+export module sdk.classes.entity;
+export import std.compat;
+export import core.sys;
+export import core.offsets;
+export import core.memory;
+export import core.vec;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.netvars;
+
+export extern "C++" {
 
 
 
-#include "core/offsets.hpp"
-#include "core/memory.hpp"
-#include <string>
-#include <string.h>
-#include <cstdint>
 
-#include "core/vec.hpp"
 
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/netvars.hpp"
 
 // https://github.com/rei-2/Amalgam/blob/c1c6bf64d739538b48a301ddc5e1a988cb9b479c/Amalgam/src/SDK/Definitions/Definitions.h#L1032
 enum class_id {  
@@ -119,26 +119,26 @@ enum entity_flags {
     FL_UNBLOCKABLE_BY_PLAYER = (1 << 30)
 };
 
-#define STUDIO_NONE 0x00000000
-#define STUDIO_RENDER 0x00000001
-#define STUDIO_VIEWXFORMATTACHMENTS 0x00000002
-#define STUDIO_DRAWTRANSLUCENTSUBMODELS 0x00000004
-#define STUDIO_TWOPASS 0x00000008
-#define STUDIO_STATIC_LIGHTING 0x00000010
-#define STUDIO_WIREFRAME 0x00000020
-#define STUDIO_ITEM_BLINK 0x00000040
-#define STUDIO_NOSHADOWS 0x00000080
-#define STUDIO_WIREFRAME_VCOLLIDE 0x00000100
-#define STUDIO_NO_OVERRIDE_FOR_ATTACH 0x00000200
-#define STUDIO_GENERATE_STATS 0x01000000
-#define STUDIO_SSAODEPTHTEXTURE 0x08000000
-#define STUDIO_SHADOWDEPTHTEXTURE 0x40000000
-#define STUDIO_TRANSPARENCY 0x80000000
+inline constexpr auto STUDIO_NONE = 0x00000000;
+inline constexpr auto STUDIO_RENDER = 0x00000001;
+inline constexpr auto STUDIO_VIEWXFORMATTACHMENTS = 0x00000002;
+inline constexpr auto STUDIO_DRAWTRANSLUCENTSUBMODELS = 0x00000004;
+inline constexpr auto STUDIO_TWOPASS = 0x00000008;
+inline constexpr auto STUDIO_STATIC_LIGHTING = 0x00000010;
+inline constexpr auto STUDIO_WIREFRAME = 0x00000020;
+inline constexpr auto STUDIO_ITEM_BLINK = 0x00000040;
+inline constexpr auto STUDIO_NOSHADOWS = 0x00000080;
+inline constexpr auto STUDIO_WIREFRAME_VCOLLIDE = 0x00000100;
+inline constexpr auto STUDIO_NO_OVERRIDE_FOR_ATTACH = 0x00000200;
+inline constexpr auto STUDIO_GENERATE_STATS = 0x01000000;
+inline constexpr auto STUDIO_SSAODEPTHTEXTURE = 0x08000000;
+inline constexpr auto STUDIO_SHADOWDEPTHTEXTURE = 0x40000000;
+inline constexpr auto STUDIO_TRANSPARENCY = 0x80000000;
 
 class Entity {
 public:  
   int get_owner_entity_handle(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BaseEntity", "m_hOwnerEntity", 0x754));
+    return mem::read<int>(this, netvar_offset<"DT_BaseEntity", "m_hOwnerEntity", 0x754>());
   }
 
   Entity* get_owner_entity(void) {
@@ -151,7 +151,7 @@ public:
   }
 
   int get_ent_flags(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_fFlags", 0x460));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_fFlags", 0x460>());
   }
   
   // TODO: Substitute "void*" with real class type
@@ -164,7 +164,7 @@ public:
   }
 
   enum tf_team get_team(void)  {
-    return (enum tf_team)mem::read<int>(this, NETVAR_OFFSET("DT_BaseEntity", "m_iTeamNum", 0xDC));
+    return (enum tf_team)mem::read<int>(this, netvar_offset<"DT_BaseEntity", "m_iTeamNum", 0xDC>());
   }
   
   int get_index(void) {
@@ -216,7 +216,7 @@ public:
   }
 
   int get_pipebomb_type(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_TFProjectile_Pipebomb", "m_iType", 0x8FC));
+    return mem::read<int>(this, netvar_offset<"DT_TFProjectile_Pipebomb", "m_iType", 0x8FC>());
   }
 
   projectile_type get_projectile_type(void) {
@@ -295,16 +295,16 @@ public:
   }
 
   int get_tickbase(void) {
-    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_nTickBase", 0x1718));
+    return mem::read<int>(this, netvar_offset<"DT_BasePlayer", "m_nTickBase", 0x1718>());
   }
 
   void set_tickbase(int tickbase) {
-    mem::write<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_nTickBase", 0x1718), tickbase);
+    mem::write<int>(this, netvar_offset<"DT_BasePlayer", "m_nTickBase", 0x1718>(), tickbase);
   }
 
   
   float get_simulation_time(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_BaseEntity", "m_flSimulationTime", 0x98));
+    return mem::read<float>(this, netvar_offset<"DT_BaseEntity", "m_flSimulationTime", 0x98>());
   }
   
   bool is_building(void) {
@@ -358,4 +358,5 @@ public:
   
 };
 
-#endif
+
+}

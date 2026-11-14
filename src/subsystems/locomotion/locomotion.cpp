@@ -1,9 +1,14 @@
-#include "gui/config.hpp"
+export module subsystems.locomotion.locomotion;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import sdk.interfaces.client;
+export import sdk.interfaces.entity_list;
+export import sdk.classes.player;
 
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/entity_list.hpp"
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
+
 
 void run_ground_impulse(user_cmd* user_cmd) {
   if (config.simulation.locomotion.ground_impulse == false) return;
@@ -30,4 +35,6 @@ void run_ground_impulse(user_cmd* user_cmd) {
   }
   
   last_attempted = user_cmd->buttons & IN_JUMP;
+}
+
 }

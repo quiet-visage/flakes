@@ -1,13 +1,18 @@
-#include "sdk/interfaces/global_vars.hpp"
-#include "sdk/interfaces/steam_friends.hpp"
+export module hooks.frame_stage_notify;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.global_vars;
+export import sdk.interfaces.steam_friends;
+export import sdk.classes.player;
+export import core.entity_cache;
+export import gui.config;
+export import core.print;
 
-#include "sdk/classes/player.hpp"
+export extern "C++" {
 
-#include "core/entity_cache.hpp"
 
-#include "gui/config.hpp"
 
-#include "core/print.hpp"
+
 
 enum ClientFrameStage {
   FRAME_UNDEFINED = -1,
@@ -20,12 +25,12 @@ enum ClientFrameStage {
   FRAME_RENDER_END
 };
 
-void (*frame_stage_notify_original)(void*, ClientFrameStage);
+inline void (*frame_stage_notify_original)(void*, ClientFrameStage);
 
-static float last_time = 0.0;
-static unsigned int a = 0;
+inline float last_time = 0.0;
+inline unsigned int a = 0;
 
-void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
+inline void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
   frame_stage_notify_original(me, current_stage);
 
   // Init start time
@@ -109,4 +114,6 @@ void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
       break;
     }
   }
+}
+
 }

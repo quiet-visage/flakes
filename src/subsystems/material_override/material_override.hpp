@@ -1,28 +1,23 @@
-#ifndef MATERIAL_OVERRIDE_HPP
-#define MATERIAL_OVERRIDE_HPP
+export module subsystems.material_override.material_override_hpp;
+export import std.compat;
+export import core.sys;
+export import core.assert;
+export import core.vec;
+export import sdk.classes.keyvalues;
+export import sdk.interfaces.material_system;
+export import sdk.interfaces.model_render;
+export import sdk.interfaces.render_view;
+export import sdk.classes.material;
+export import sdk.classes.material_var;
 
-#include <cassert>
-#include <vector>
-#include <string_view>
-
-#include "core/assert.hpp"
-
-#include "sdk/interfaces/material_system.hpp"
-#include "sdk/interfaces/model_render.hpp"
-#include "sdk/interfaces/render_view.hpp"
-
-#include "sdk/classes/material.hpp"
-#include "sdk/classes/material_var.hpp"
-
+export extern "C++" {
 
 struct ModelRenderInfo;
-void (*draw_model_execute_original)(void*, void*, ModelRenderInfo*, VMatrix*);
+inline void (*draw_model_execute_original)(void*, void*, ModelRenderInfo*, VMatrix*) = nullptr;
 
-#define DME_RETURN { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
+inline std::vector<Material*> materials;
 
-inline static std::vector<Material*> materials;
-
-static Material* create_material_ex(const std::string_view name, const std::string_view shader, const std::string_view material) {
+inline Material* create_material_ex(const std::string_view name, const std::string_view shader, const std::string_view material) {
   KeyValues* values = new KeyValues(shader.data());
   values->load_from_buffer(name.data(), material.data());
   Material* mat = material_system->create_material(name.data(), values);
@@ -32,14 +27,14 @@ static Material* create_material_ex(const std::string_view name, const std::stri
   return mat;
 }
 
-static Material* get_configured_material(int index) {
+inline Material* get_configured_material(int index) {
   if (index < 0 || (size_t)index >= materials.size()) {
     return nullptr;
   }
   return materials[(size_t)index];
 }
 
-static void initialize_materials(void) {
+inline void initialize_materials(void) {
   materials.push_back(nullptr);
   
   materials.push_back(create_material_ex("TfFlat",
@@ -63,40 +58,28 @@ static void initialize_materials(void) {
 					 R"#(
 "VertexLitGeneric" {
    "$basetexture" "white"
-   "$bumpmap" "models/player/shared/shared_normal"
-   "$color2" "[0 0 0]"
-   "$additive" "1"
-   "$phong" "1"
-   "$phongfresnelranges" "[0 0.5 1]"
-   "$envmap" "skybox/sky_dustbowl_01"
+   "$bumpmap" "white"
+   "$envmap" "skybox/sky_dust_hdr"
    "$envmapfresnel" "1"
-   "$selfillumtint" "[0 0 0]"
-   "$envmaptint" "[0 0 0]"
+   "$envmapfresnelminmaxexp" "[0 1 2]"
 }
 )#"));
-  
+
 }
 
-static void set_material_information(Material* material, RGBA_float color, bool wireframe = false, bool ignore_z = false, OverrideType override_type = OVERRIDE_NORMAL) {
-  if (material == nullptr) {
-    static bool logged = false;
-    if (!logged) { print("[material_override] set_material_information() got a null material, skipping\n"); logged = true; }
-    return;
-  }
-  
-  render_view->set_color_modulation(&color);
-  render_view->set_blend(color.a);
-  
-  if (material == materials.at(3)) {
-    MaterialVar* envmaptint = material->find_var("$envmaptint");
-    if (envmaptint != nullptr) {
-      envmaptint->set_vec_value(color);
-    }
-  }
-  
-  material->set_material_flag(MATERIAL_VAR_IGNOREZ, ignore_z);
+inline void set_material_information(Material* material, RGBA_float color, bool wireframe = false, bool ignore_z = false, OverrideType override_type = OVERRIDE_NORMAL) {
   material->set_material_flag(MATERIAL_VAR_WIREFRAME, wireframe);
+  material->set_material_flag(MATERIAL_VAR_IGNOREZ, ignore_z);
+  
+  material->color_modulate(color);
+  material->alpha_modulate(color.a);
+
+  MaterialVar* envmap = material->find_var("$envmaptint");
+  if (envmap != nullptr) {
+    envmap->set_vec_value(color);
+  }
+  
   model_render->forced_material_override(material, override_type);
 }
 
-#endif
+}

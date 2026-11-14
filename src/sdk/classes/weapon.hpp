@@ -1,18 +1,21 @@
-#ifndef WEAPON_HPP
-#define WEAPON_HPP
+export module sdk.classes.weapon;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.classes.entity;
+export import sdk.interfaces.global_vars;
+export import core.print;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "entity.hpp"
 
-#include "sdk/interfaces/global_vars.hpp"
 
-#include "core/print.hpp"
 
-#define TICK_INTERVAL 0.015
+inline constexpr auto TICK_INTERVAL = 0.015;
 
 //https://github.com/Fedoraware/Fedoraware/blob/888d9338dbf08f6c55816c86d5887dd58cc28d98/Fedoraware/Fedoraware-TF2/src/SDK/Includes/Enums.h#L1081
-enum {
+enum weapon_def_index_t {
   Scout_m_Scattergun = 13,
   Scout_m_ScattergunR = 200,
   Scout_m_ForceANature = 45,
@@ -632,7 +635,7 @@ enum {
   Misc_t_Saxxy = 423
 };
 
-enum {
+enum weapon_type_id_t {
   TF_WEAPON_NONE = 0,
   TF_WEAPON_BAT,
   TF_WEAPON_BAT_WOOD,
@@ -743,7 +746,7 @@ enum {
 class Weapon : Entity {
 public:
   short get_def_id(void) {
-    return mem::read<short>(this, NETVAR_OFFSET("DT_EconEntity", "m_iItemDefinitionIndex", 0xc30 + 0x90 + 0x44));
+    return mem::read<short>(this, netvar_offset<"DT_EconEntity", "m_iItemDefinitionIndex", 0xc30 + 0x90 + 0x44>());
   }
 
   int get_type_id(void) {
@@ -864,19 +867,19 @@ public:
   }
   
   float get_charged_damage(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_TFSniperRifle", "m_flChargedDamage", 0x109C));
+    return mem::read<float>(this, netvar_offset<"DT_TFSniperRifle", "m_flChargedDamage", 0x109C>());
   }  
   
   float get_last_attack(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_TFWeaponBase", "m_flLastFireTime", 0x1064));
+    return mem::read<float>(this, netvar_offset<"DT_TFWeaponBase", "m_flLastFireTime", 0x1064>());
   }
   
   float get_next_primary_attack(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_BaseCombatWeapon", "m_flNextPrimaryAttack", 0xE94));
+    return mem::read<float>(this, netvar_offset<"DT_BaseCombatWeapon", "m_flNextPrimaryAttack", 0xE94>());
   }
 
   float get_next_secondary_attack(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_BaseCombatWeapon", "m_flNextSecondaryAttack", 0xE98));
+    return mem::read<float>(this, netvar_offset<"DT_BaseCombatWeapon", "m_flNextSecondaryAttack", 0xE98>());
   }
 
   bool can_primary_attack() {
@@ -884,7 +887,7 @@ public:
     if (owner == nullptr)
       return false;
 
-    float next_attack = mem::read<float>(owner, NETVAR_OFFSET("DT_BaseCombatCharacter", "m_flNextAttack", 0x1088));
+    float next_attack = mem::read<float>(owner, netvar_offset<"DT_BaseCombatCharacter", "m_flNextAttack", 0x1088>());
     float next_primary_attack = this->get_next_primary_attack();
     float time = owner->get_tickbase() * global_vars->interval_per_tick;    
     
@@ -896,7 +899,7 @@ public:
     if (owner == nullptr)
       return false;
     
-    float next_attack = mem::read<float>(owner, NETVAR_OFFSET("DT_BaseCombatCharacter", "m_flNextAttack", 0x1088));
+    float next_attack = mem::read<float>(owner, netvar_offset<"DT_BaseCombatCharacter", "m_flNextAttack", 0x1088>());
     float next_secondary_attack = this->get_next_secondary_attack();
     float time = owner->get_tickbase() * global_vars->interval_per_tick;    
     
@@ -920,4 +923,5 @@ public:
 
 };
 
-#endif
+
+}

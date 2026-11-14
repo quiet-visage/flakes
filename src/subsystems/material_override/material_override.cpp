@@ -1,26 +1,31 @@
-#include "subsystems/material_override/material_override.hpp"
+export module subsystems.material_override.material_override;
+export import std.compat;
+export import core.sys;
+export import subsystems.material_override.material_override_hpp;
+export import subsystems.material_override.material_override_player;
+export import subsystems.material_override.material_override_wearable;
+export import core.assert;
+export import gui.config;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.material_system;
+export import sdk.classes.keyvalues;
+export import sdk.classes.player;
 
-#include <string_view>
+export extern "C++" {
+struct ModelRenderInfo;
 
-#include "subsystems/material_override/material_override_player.cpp"
-#include "subsystems/material_override/material_override_wearable.cpp"
 
-#include "core/assert.hpp"
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/material_system.hpp"
 
-#include "sdk/classes/keyvalues.hpp"
-#include "sdk/classes/player.hpp"
+
 
 void apply_material_override(Entity* entity, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
-  if (config.materials.master == false) DME_RETURN;
+  if (config.materials.master == false) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
 
   Player* localplayer = entity_list->get_localplayer();
   if (localplayer == nullptr) {
-    DME_RETURN;
+    { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
   }
 
 
@@ -33,7 +38,7 @@ void apply_material_override(Entity* entity, void* me, void* state, ModelRenderI
   if (materials.empty()) {
     static bool logged = false;
     if (!logged) { print("[material_override] materials failed to initialize, overrides disabled\n"); logged = true; }
-    DME_RETURN;
+    { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
   }
 
     
@@ -50,4 +55,6 @@ void apply_material_override(Entity* entity, void* me, void* state, ModelRenderI
   RGBA_float white = {1,1,1,1};
   render_view->set_color_modulation(&white);
   render_view->set_blend(1);
+}
+
 }

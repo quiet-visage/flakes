@@ -1,9 +1,12 @@
-#ifndef GAME_MOVEMENT_HPP
-#define GAME_MOVEMENT_HPP
+export module sdk.interfaces.game_movement;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "core/vec.hpp"
 
 class Player;
 
@@ -59,6 +62,7 @@ public:
   }
 };
 
-inline static GameMovement* game_movement;
+inline GameMovement* game_movement;
 
-#endif
+
+}

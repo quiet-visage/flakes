@@ -1,15 +1,13 @@
-#ifndef INDICATORS_HPP
-#define INDICATORS_HPP
+export module gui.indicators;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import subsystems.tick_scheduler.tick_scheduler_hpp;
+export import subsystems.observer_telemetry.observer_telemetry;
 
-#include <cstdio>
-#include "gui/config.hpp"
+export extern "C++" {
 
-#include "imgui/dearimgui.hpp"
-
-#include "subsystems/tick_scheduler/tick_scheduler.hpp"
-#include "subsystems/observer_telemetry/observer_telemetry.hpp"
-
-static void draw_tick_scheduler_indicator(void) {
+inline void draw_tick_scheduler_indicator(void) {
   if (config.simulation.directives.tick_telemetry_widget == false || config.simulation.directives.tick_scheduler == false) return;
 
   ImGuiStyle* style = &ImGui::GetStyle();
@@ -34,4 +32,4 @@ static void draw_tick_scheduler_indicator(void) {
   ImGui::End();
 }
 
-#endif
+}

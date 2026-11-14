@@ -1,20 +1,24 @@
-#include "subsystems/graph_navigation/navmesh.hpp"
+export module subsystems.graph_navigation.graph_navigation;
+export import std.compat;
+export import core.sys;
+export import subsystems.graph_navigation.navmesh;
+export import subsystems.graph_navigation.nav_graph;
+export import core.math;
+export import gui.config;
+export import sdk.interfaces.client;
+export import sdk.interfaces.entity_list;
+export import sdk.classes.player;
+export import sdk.classes.capture_flag;
+export import sdk.classes.team_objective_resource;
+export import core.entity_cache;
 
-#include "micropather/micropather.h"
-#include "subsystems/graph_navigation/nav_graph.hpp"
+export extern "C++" {
 
-#include "core/math.hpp"
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/entity_list.hpp"
 
-#include "sdk/classes/player.hpp"
-#include "sdk/classes/capture_flag.hpp"
-#include "sdk/classes/team_objective_resource.hpp"
 
-#include "core/entity_cache.hpp"
+
 
 bool make_path(unsigned int area_start_id, unsigned int area_end_id) {
   path.path_ids.clear();
@@ -261,5 +265,7 @@ void run_graph_navigation(user_cmd* user_cmd, Vec3 original_view_angles) {
       
     }
   }
+
+}
 
 }

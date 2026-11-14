@@ -1,18 +1,21 @@
-#include "subsystems/spatial_telemetry/spatial_telemetry.hpp"
+export module subsystems.spatial_telemetry.spatial_telemetry_entity;
+export import std.compat;
+export import core.sys;
+export import subsystems.spatial_telemetry.spatial_telemetry_hpp;
+export import gui.config;
+export import sdk.interfaces.surface;
+export import sdk.interfaces.render_view;
+export import sdk.classes.player;
+export import sdk.classes.building;
+export import core.vec;
+export import core.print;
 
-#include <stdlib.h>
-#include <string>
+export extern "C++" {
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/surface.hpp"
-#include "sdk/interfaces/render_view.hpp"
 
-#include "sdk/classes/player.hpp"
-#include "sdk/classes/building.hpp"
 
-#include "core/vec.hpp"
-#include "core/print.hpp"
+
 
 void draw_entity_bounding_box(Vec3 screen, Entity* entity, Player* localplayer) {
   if (config.telemetry.pickup.box == true && entity->get_pickup_type() != pickup_type::UNKNOWN) {
@@ -301,4 +304,6 @@ void render_entity_telemetry(unsigned int i, Entity* entity) {
   draw_building_integrity_bar(screen, entity, localplayer);
   draw_entity_identifier(screen, entity, localplayer);
   draw_pickup_respawn_timers();
+}
+
 }

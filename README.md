@@ -7,6 +7,8 @@ This project explores low-level systems programming concepts on Linux, including
 > [!NOTE]
 > **Academic & Educational Scope**  
 > This repository serves as a technical case study in reverse engineering, game engine architecture, runtime instrumentation, and autonomous behavioral modeling in complex 3D environments.
+>
+> This framework is designed strictly for offline analysis and local, bot-populated environments. It is not intended for public matchmaking servers.
 
 ---
 

@@ -1,14 +1,18 @@
-#include <unistd.h>
+export module hooks.fire_event_client_side;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.game_event_manager;
+export import sdk.classes.player;
+export import subsystems.graph_navigation.navmesh;
+export import subsystems.hardware_bridge.hardware_bridge_hpp;
+export import core.print;
 
-#include "sdk/interfaces/game_event_manager.hpp"
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
 
-#include "subsystems/graph_navigation/navmesh.hpp"
 
-#include "subsystems/hardware_bridge/hardware_bridge.hpp"
 
-#include "core/print.hpp"
+
 
 
 enum BonusEffect {
@@ -22,9 +26,9 @@ enum BonusEffect {
   COUNT
 };
 
-bool (*fire_event_client_side_original)(void*, GameEvent*) = NULL;
+inline bool (*fire_event_client_side_original)(void*, GameEvent*) = nullptr;
 
-bool fire_event_client_side_hook(void* me, GameEvent* event) {
+inline bool fire_event_client_side_hook(void* me, GameEvent* event) {
 
   std::string event_name = std::string(event->get_name());
 
@@ -92,4 +96,6 @@ bool fire_event_client_side_hook(void* me, GameEvent* event) {
   }
   
   return fire_event_client_side_original(me, event);
+}
+
 }

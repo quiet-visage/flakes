@@ -1,11 +1,14 @@
-#ifndef ENGINE_TRACE_HPP
-#define ENGINE_TRACE_HPP
+export module sdk.interfaces.engine_trace;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+export import sdk.classes.entity;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "core/vec.hpp"
 
-#include "sdk/classes/entity.hpp"
 
 enum trace_type_t {
   TRACE_EVERYTHING = 0,
@@ -62,92 +65,92 @@ struct trace_t {
   // bool did_hit() const { return m_fraction < 1.f || m_allsolid || m_start_solid; }
 };
 
-#define	CONTENTS_EMPTY			0		// No contents
+inline constexpr auto CONTENTS_EMPTY = 0; // No contents
 
-#define	CONTENTS_SOLID			0x1		// an eye is never valid in a solid
-#define	CONTENTS_WINDOW			0x2		// translucent, but not watery (glass)
-#define	CONTENTS_AUX			0x4
-#define	CONTENTS_GRATE			0x8		// alpha-tested "grate" textures.  Bullets/sight pass through, but solids don't
-#define	CONTENTS_SLIME			0x10
-#define	CONTENTS_WATER			0x20
-#define	CONTENTS_BLOCKLOS		0x40	// block AI line of sight
-#define CONTENTS_OPAQUE			0x80	// things that cannot be seen through (may be non-solid though)
-#define	LAST_VISIBLE_CONTENTS	0x80
+inline constexpr auto CONTENTS_SOLID = 0x1; // an eye is never valid in a solid
+inline constexpr auto CONTENTS_WINDOW = 0x2; // translucent, but not watery (glass)
+inline constexpr auto CONTENTS_AUX = 0x4;
+inline constexpr auto CONTENTS_GRATE = 0x8; // alpha-tested "grate" textures.  Bullets/sight pass through, but solids don't
+inline constexpr auto CONTENTS_SLIME = 0x10;
+inline constexpr auto CONTENTS_WATER = 0x20;
+inline constexpr auto CONTENTS_BLOCKLOS = 0x40; // block AI line of sight
+inline constexpr auto CONTENTS_OPAQUE = 0x80; // things that cannot be seen through (may be non-solid though)
+inline constexpr auto LAST_VISIBLE_CONTENTS = 0x80;
 
-#define ALL_VISIBLE_CONTENTS (LAST_VISIBLE_CONTENTS | (LAST_VISIBLE_CONTENTS-1))
+inline constexpr auto ALL_VISIBLE_CONTENTS = (LAST_VISIBLE_CONTENTS | (LAST_VISIBLE_CONTENTS-1));
 
-#define CONTENTS_TESTFOGVOLUME	0x100
-#define CONTENTS_UNUSED			0x200	
+inline constexpr auto CONTENTS_TESTFOGVOLUME = 0x100;
+inline constexpr auto CONTENTS_UNUSED = 0x200;
 
 // unused 
 // NOTE: If it's visible, grab from the top + update LAST_VISIBLE_CONTENTS
 // if not visible, then grab from the bottom.
-#define CONTENTS_UNUSED6		0x400
+inline constexpr auto CONTENTS_UNUSED6 = 0x400;
 
-#define CONTENTS_TEAM1			0x800	// per team contents used to differentiate collisions 
-#define CONTENTS_TEAM2			0x1000	// between players and objects on different teams
-#define CONTENTS_REDTEAM		CONTENTS_TEAM1
-#define CONTENTS_BLUETEAM		CONTENTS_TEAM2
+inline constexpr auto CONTENTS_TEAM1 = 0x800; // per team contents used to differentiate collisions
+inline constexpr auto CONTENTS_TEAM2 = 0x1000; // between players and objects on different teams
+inline constexpr auto CONTENTS_REDTEAM = CONTENTS_TEAM1;
+inline constexpr auto CONTENTS_BLUETEAM = CONTENTS_TEAM2;
 
 // ignore CONTENTS_OPAQUE on surfaces that have SURF_NODRAW
-#define CONTENTS_IGNORE_NODRAW_OPAQUE	0x2000
+inline constexpr auto CONTENTS_IGNORE_NODRAW_OPAQUE = 0x2000;
 
 // hits entities which are MOVETYPE_PUSH (doors, plats, etc.)
-#define CONTENTS_MOVEABLE		0x4000
+inline constexpr auto CONTENTS_MOVEABLE = 0x4000;
 
 // remaining contents are non-visible, and don't eat brushes
-#define	CONTENTS_AREAPORTAL		0x8000
+inline constexpr auto CONTENTS_AREAPORTAL = 0x8000;
 
-#define	CONTENTS_PLAYERCLIP		0x10000
-#define	CONTENTS_MONSTERCLIP	0x20000
+inline constexpr auto CONTENTS_PLAYERCLIP = 0x10000;
+inline constexpr auto CONTENTS_MONSTERCLIP = 0x20000;
 
 // currents can be added to any other contents, and may be mixed
-#define	CONTENTS_CURRENT_0		0x40000
-#define	CONTENTS_CURRENT_90		0x80000
-#define	CONTENTS_CURRENT_180	0x100000
-#define	CONTENTS_CURRENT_270	0x200000
-#define	CONTENTS_CURRENT_UP		0x400000
-#define	CONTENTS_CURRENT_DOWN	0x800000
+inline constexpr auto CONTENTS_CURRENT_0 = 0x40000;
+inline constexpr auto CONTENTS_CURRENT_90 = 0x80000;
+inline constexpr auto CONTENTS_CURRENT_180 = 0x100000;
+inline constexpr auto CONTENTS_CURRENT_270 = 0x200000;
+inline constexpr auto CONTENTS_CURRENT_UP = 0x400000;
+inline constexpr auto CONTENTS_CURRENT_DOWN = 0x800000;
 
-#define	CONTENTS_ORIGIN			0x1000000	// removed before bsping an entity
+inline constexpr auto CONTENTS_ORIGIN = 0x1000000; // removed before bsping an entity
 
-#define	CONTENTS_MONSTER		0x2000000	// should never be on a brush, only in game
-#define	CONTENTS_DEBRIS			0x4000000
-#define	CONTENTS_DETAIL			0x8000000	// brushes to be added after vis leafs
-#define	CONTENTS_TRANSLUCENT	0x10000000	// auto set if any surface has trans
-#define	CONTENTS_LADDER			0x20000000
-#define CONTENTS_HITBOX			0x40000000	// use accurate hitboxes on trace
-#define CONTENTS_NOSTARTSOLID	0x80000000	// don't skip entities or displacements when starting in solid
+inline constexpr auto CONTENTS_MONSTER = 0x2000000; // should never be on a brush, only in game
+inline constexpr auto CONTENTS_DEBRIS = 0x4000000;
+inline constexpr auto CONTENTS_DETAIL = 0x8000000; // brushes to be added after vis leafs
+inline constexpr auto CONTENTS_TRANSLUCENT = 0x10000000; // auto set if any surface has trans
+inline constexpr auto CONTENTS_LADDER = 0x20000000;
+inline constexpr auto CONTENTS_HITBOX = 0x40000000; // use accurate hitboxes on trace
+inline constexpr auto CONTENTS_NOSTARTSOLID = 0x80000000; // don't skip entities or displacements when starting in solid
 
 
-#define	MASK_ALL					(0xFFFFFFFF)
+inline constexpr auto MASK_ALL = (0xFFFFFFFF);
 // everything that is normally solid
-#define	MASK_SOLID					(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE)
+inline constexpr auto MASK_SOLID = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE);
 // everything that blocks player movement
-#define	MASK_PLAYERSOLID			(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE)
+inline constexpr auto MASK_PLAYERSOLID = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE);
 // blocks npc movement
-#define	MASK_NPCSOLID				(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE)
+inline constexpr auto MASK_NPCSOLID = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE);
 // water physics in these contents
-#define	MASK_WATER					(CONTENTS_WATER|CONTENTS_MOVEABLE|CONTENTS_SLIME)
+inline constexpr auto MASK_WATER = (CONTENTS_WATER|CONTENTS_MOVEABLE|CONTENTS_SLIME);
 // everything that blocks lighting
-#define	MASK_OPAQUE					(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_OPAQUE)
+inline constexpr auto MASK_OPAQUE = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_OPAQUE);
 // everything that blocks lighting, but with monsters added.
-#define MASK_OPAQUE_AND_NPCS		(MASK_OPAQUE|CONTENTS_MONSTER)
+inline constexpr auto MASK_OPAQUE_AND_NPCS = (MASK_OPAQUE|CONTENTS_MONSTER);
 // everything that blocks line of sight for AI
-#define MASK_BLOCKLOS				(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_BLOCKLOS)
+inline constexpr auto MASK_BLOCKLOS = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_BLOCKLOS);
 // everything that blocks line of sight for AI plus NPCs
-#define MASK_BLOCKLOS_AND_NPCS		(MASK_BLOCKLOS|CONTENTS_MONSTER)
+inline constexpr auto MASK_BLOCKLOS_AND_NPCS = (MASK_BLOCKLOS|CONTENTS_MONSTER);
 // everything that blocks line of sight for players
-#define	MASK_VISIBLE					(MASK_OPAQUE|CONTENTS_IGNORE_NODRAW_OPAQUE)
+inline constexpr auto MASK_VISIBLE = (MASK_OPAQUE|CONTENTS_IGNORE_NODRAW_OPAQUE);
 // everything that blocks line of sight for players, but with monsters added.
-#define MASK_VISIBLE_AND_NPCS		(MASK_OPAQUE_AND_NPCS|CONTENTS_IGNORE_NODRAW_OPAQUE)
+inline constexpr auto MASK_VISIBLE_AND_NPCS = (MASK_OPAQUE_AND_NPCS|CONTENTS_IGNORE_NODRAW_OPAQUE);
 // bullets see these as solid
-#define	MASK_SHOT					(CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_HITBOX)
+inline constexpr auto MASK_SHOT = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_HITBOX);
 
 
 
 //add a namespace or class for these functions and vars
-bool should_hit_entity(struct trace_filter* interface, Entity* handle_entity, int contents_mask) {
+inline bool should_hit_entity(struct trace_filter* interface, Entity* handle_entity, int contents_mask) {
   if (handle_entity == nullptr) return false;
   // IClientUnknown::GetBaseEntity() is at vfunc index 8.
   // For CStaticProp (from engine.so), vfunc[8] returns nullptr; static props should block traces.
@@ -158,11 +161,11 @@ bool should_hit_entity(struct trace_filter* interface, Entity* handle_entity, in
   return true;
 }
 
-enum trace_type_t get_type(struct trace_filter* interface) {
+inline enum trace_type_t get_type(struct trace_filter* interface) {
   return TRACE_EVERYTHING;
 }
 
-static void* trace_filter_vtable[2] = { (void*)should_hit_entity, (void*)get_type };
+inline void* trace_filter_vtable[2] = { (void*)should_hit_entity, (void*)get_type };
 
 class EngineTrace {
 public:
@@ -258,6 +261,7 @@ public:
 
 };
 
-inline static EngineTrace* engine_trace;
+inline EngineTrace* engine_trace;
 
-#endif
+
+}

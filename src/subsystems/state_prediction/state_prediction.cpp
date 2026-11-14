@@ -1,16 +1,19 @@
-#include <limits.h>
+export module subsystems.state_prediction.state_prediction;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.global_vars;
+export import sdk.interfaces.prediction;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.client;
+export import sdk.interfaces.game_movement;
+export import sdk.interfaces.move_helper;
+export import sdk.classes.player;
+export import core.random_seed;
 
-#include "sdk/interfaces/global_vars.hpp"
-#include "sdk/interfaces/prediction.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/game_movement.hpp"
-#include "sdk/interfaces/move_helper.hpp"
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
 
-#include "core/random_seed.hpp"
-#include "md5/md5.hpp"
+
 
 int get_pred_tickbase(user_cmd* user_cmd, Player* localplayer) {
   static int tick = 0;
@@ -87,4 +90,6 @@ void end_state_prediction() {
   global_vars->tickcount = old_tickcount;
 
   *random_seed = -1;
+}
+
 }

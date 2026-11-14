@@ -1,8 +1,11 @@
-#ifndef RENDER_CONTEXT_HPP
-#define RENDER_CONTEXT_HPP
+export module sdk.interfaces.render_context;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
 enum MaterialCullMode {
   MATERIAL_CULLMODE_CCW,
   MATERIAL_CULLMODE_CW
@@ -85,4 +88,5 @@ public:
   
 };
 
-#endif
+
+}

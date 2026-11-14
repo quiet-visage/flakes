@@ -1,9 +1,12 @@
-#ifndef CONVAR_HPP
-#define CONVAR_HPP
+export module sdk.classes.convar;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.offsets;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "core/offsets.hpp"
 class Convar {
 public:
   void set_int(int value) {
@@ -24,4 +27,5 @@ public:
 
 };
 
-#endif
+
+}

@@ -1,29 +1,35 @@
-#include "gui/config.hpp"
+export module subsystems.material_override.material_override_wearable;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import sdk.interfaces.material_system;
+export import sdk.interfaces.render_view;
+export import sdk.interfaces.model_render;
+export import sdk.classes.entity;
+export import sdk.classes.player;
+export import subsystems.material_override.material_override_hpp;
 
-#include "sdk/interfaces/material_system.hpp"
-#include "sdk/interfaces/render_view.hpp"
-#include "sdk/interfaces/model_render.hpp"
+export extern "C++" {
+struct ModelRenderInfo;
 
-#include "sdk/classes/entity.hpp"
-#include "sdk/classes/player.hpp"
-#include "subsystems/material_override/material_override.hpp"
+
 
 void apply_wearable_material_override(Entity* entity, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
 
   Player* localplayer = entity_list->get_localplayer();
-  if (localplayer == nullptr || entity == nullptr) DME_RETURN;
+  if (localplayer == nullptr || entity == nullptr) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
 
   Entity* owner_entity = entity->get_owner_entity();
-  if (owner_entity == nullptr || owner_entity->get_class_id() != class_id::PLAYER) DME_RETURN;
+  if (owner_entity == nullptr || owner_entity->get_class_id() != class_id::PLAYER) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
   Player* owner_player = (Player*)owner_entity;
   
   
-  if (owner_player == localplayer && config.materials.player.local == false) DME_RETURN; // Ignore Local Player
-  if (entity->is_dormant() || owner_player->is_dormant()) DME_RETURN;
-  if (owner_player->get_lifestate() != 1) DME_RETURN; // Ignore Dead Owner
-  if (owner_player->get_team() != localplayer->get_team() && config.materials.player.enemy == false && !owner_player->is_friend()) DME_RETURN; // Ignore Enemy
-  if (owner_player->get_team() == localplayer->get_team() && owner_player != localplayer && config.materials.player.team == false && !owner_player->is_friend()) DME_RETURN; // Ignore Team
-  if (owner_player->is_friend() && config.materials.player.friends == false && (config.materials.player.team == false && owner_player->get_team() == localplayer->get_team())) DME_RETURN; // Ignore Friends
+  if (owner_player == localplayer && config.materials.player.local == false) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Local Player
+  if (entity->is_dormant() || owner_player->is_dormant()) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; }
+  if (owner_player->get_lifestate() != 1) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Dead Owner
+  if (owner_player->get_team() != localplayer->get_team() && config.materials.player.enemy == false && !owner_player->is_friend()) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Enemy
+  if (owner_player->get_team() == localplayer->get_team() && owner_player != localplayer && config.materials.player.team == false && !owner_player->is_friend()) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Team
+  if (owner_player->is_friend() && config.materials.player.friends == false && (config.materials.player.team == false && owner_player->get_team() == localplayer->get_team())) { draw_model_execute_original(me, state, pinfo, bone_to_world); return; } // Ignore Friends
 
   
   RenderContext* render_context = material_system->get_render_context(); 
@@ -162,5 +168,7 @@ void apply_wearable_material_override(Entity* entity, void* me, void* state, Mod
 
   
   model_render->forced_material_override(nullptr, OVERRIDE_NORMAL);
+
+}
 
 }

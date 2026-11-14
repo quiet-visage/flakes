@@ -1,8 +1,6 @@
-#ifndef RANDOM_SEED_HPP
-#define RANDOM_SEED_HPP
+export module core.random_seed;
+export import std.compat;
 
-#include <cstdint>
-
-static uint32_t* random_seed; 
-
-#endif
+export extern "C++" {
+  inline uint32_t* random_seed = nullptr;
+}

@@ -1,9 +1,12 @@
-#ifndef MODEL_RENDER_HPP
-#define MODEL_RENDER_HPP
+export module sdk.interfaces.model_render;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import sdk.classes.material;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "sdk/classes/material.hpp"
 
 enum OverrideType {
   OVERRIDE_NORMAL = 0,
@@ -21,6 +24,7 @@ public:
   
 };
 
-inline static ModelRender* model_render;
+inline ModelRender* model_render;
 
-#endif
+
+}

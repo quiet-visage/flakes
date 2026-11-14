@@ -1,13 +1,15 @@
-#ifndef SURFACE_HPP
-#define SURFACE_HPP
+export module sdk.interfaces.surface;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+export import gui.config;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include <wchar.h>
 
-#include "core/vec.hpp"
 
-#include "gui/config.hpp"
 
 class Surface {
 public:
@@ -88,6 +90,7 @@ public:
 
 };
 
-static inline Surface* surface;
+inline Surface* surface;
 
-#endif
+
+}

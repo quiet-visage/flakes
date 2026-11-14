@@ -1,40 +1,41 @@
-#include <vulkan/vulkan.hpp>
-#include <vulkan/vulkan_core.h>
+export module hooks.vulkan;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.surface;
+export import sdk.interfaces.engine;
+export import subsystems.spatial_telemetry.spatial_telemetry;
+export import core.print;
+export import gui.menu;
+export import gui.indicators;
 
-#include "imgui/imgui_impl_vulkan.h"
-#include "imgui/imgui_impl_sdl2.h"
+export extern "C++" {
 
-#include "sdk/interfaces/surface.hpp"
-#include "sdk/interfaces/engine.hpp"
 
-#include "subsystems/spatial_telemetry/spatial_telemetry.cpp"
 
-#include "core/print.hpp"
 
-#include "gui/menu.hpp"
-#include "gui/indicators.hpp"
 
-static VkDevice vk_device;
-static VkAllocationCallbacks* vk_allocator = NULL;
-static VkQueueFamilyProperties* queue_families;
-static uint32_t queue_family = (uint32_t)-1;
-static VkRenderPass vk_render_pass = VK_NULL_HANDLE;
-static VkDescriptorPool vk_descriptor_pool = VK_NULL_HANDLE;
-static VkExtent2D vk_image_extent = { };
-static VkPhysicalDevice vk_physical_device = VK_NULL_HANDLE;
-static VkInstance vk_instance = VK_NULL_HANDLE;
-static VkPipelineCache vk_pipeline_cache = VK_NULL_HANDLE;
-static uint32_t min_image_count = 3;
-static ImGui_ImplVulkanH_Frame g_Frames[8] = { };
-static ImGui_ImplVulkanH_FrameSemaphores g_FrameSemaphores[8] = { };
-static uint32_t count;
 
-VkResult (*queue_present_original)(VkQueue, const VkPresentInfoKHR*) = NULL;
-VkResult (*create_swapchain_original)(VkDevice, const VkSwapchainCreateInfoKHR*, const VkAllocationCallbacks*, VkSwapchainKHR*) = NULL;
-VkResult (*acquire_next_image_original)(VkDevice, VkSwapchainKHR, uint64_t, VkSemaphore, VkFence, uint32_t*) = NULL;
-VkResult (*acquire_next_image2_original)(VkDevice, const VkAcquireNextImageInfoKHR*,  uint32_t*) = NULL;
+inline VkDevice vk_device;
+inline VkAllocationCallbacks* vk_allocator = nullptr;
+inline VkQueueFamilyProperties* queue_families;
+inline uint32_t queue_family = (uint32_t)-1;
+inline VkRenderPass vk_render_pass = VK_NULL_HANDLE;
+inline VkDescriptorPool vk_descriptor_pool = VK_NULL_HANDLE;
+inline VkExtent2D vk_image_extent = { };
+inline VkPhysicalDevice vk_physical_device = VK_NULL_HANDLE;
+inline VkInstance vk_instance = VK_NULL_HANDLE;
+inline VkPipelineCache vk_pipeline_cache = VK_NULL_HANDLE;
+inline uint32_t min_image_count = 3;
+inline ImGui_ImplVulkanH_Frame g_Frames[8] = { };
+inline ImGui_ImplVulkanH_FrameSemaphores g_FrameSemaphores[8] = { };
+inline uint32_t count;
 
-VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* present_info) {
+inline VkResult (*queue_present_original)(VkQueue, const VkPresentInfoKHR*) = nullptr;
+inline VkResult (*create_swapchain_original)(VkDevice, const VkSwapchainCreateInfoKHR*, const VkAllocationCallbacks*, VkSwapchainKHR*) = nullptr;
+inline VkResult (*acquire_next_image_original)(VkDevice, VkSwapchainKHR, uint64_t, VkSemaphore, VkFence, uint32_t*) = nullptr;
+inline VkResult (*acquire_next_image2_original)(VkDevice, const VkAcquireNextImageInfoKHR*,  uint32_t*) = nullptr;
+
+inline VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* present_info) {
   static bool logged_first_present = false;
   static bool logged_missing_device = false;
   static bool logged_missing_window = false;
@@ -91,7 +92,7 @@ VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* present_info)
     if (g_Frames[0].Framebuffer == VK_NULL_HANDLE) {
     // begin creating render target
       uint32_t uImageCount;
-      vkGetSwapchainImagesKHR(vk_device, swapchain, &uImageCount, NULL);
+      vkGetSwapchainImagesKHR(vk_device, swapchain, &uImageCount, nullptr);
 
       VkImage backbuffers[8] = { };
       vkGetSwapchainImagesKHR(vk_device, swapchain, &uImageCount, backbuffers);
@@ -351,7 +352,7 @@ VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* present_info)
       info.pWaitSemaphores = &fsd->RenderCompleteSemaphore;
 
       info.signalSemaphoreCount = 0;
-      info.pSignalSemaphores = NULL;
+      info.pSignalSemaphores = nullptr;
 
       vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
     }
@@ -360,7 +361,7 @@ VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* present_info)
   return queue_present_original(queue, present_info);
 }
 
-VkResult create_swapchain_hook(VkDevice device, const VkSwapchainCreateInfoKHR* create_info, const VkAllocationCallbacks* allocator, VkSwapchainKHR* swapchain) {
+inline VkResult create_swapchain_hook(VkDevice device, const VkSwapchainCreateInfoKHR* create_info, const VkAllocationCallbacks* allocator, VkSwapchainKHR* swapchain) {
 
   for (uint32_t i = 0; i < 8; ++i) {
     if (g_Frames[i].Fence) {
@@ -407,7 +408,7 @@ VkResult create_swapchain_hook(VkDevice device, const VkSwapchainCreateInfoKHR* 
 
 
 // These two hooks populate our local VkDevice reference
-VkResult acquire_next_image_hook(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* image_index) {
+inline VkResult acquire_next_image_hook(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* image_index) {
   if (vk_device == VK_NULL_HANDLE && device != VK_NULL_HANDLE) {
     print("Captured VkDevice via vkAcquireNextImageKHR: %p\n", (void*)device);
   }
@@ -416,11 +417,13 @@ VkResult acquire_next_image_hook(VkDevice device, VkSwapchainKHR swapchain, uint
   return acquire_next_image_original(device, swapchain, timeout, semaphore, fence, image_index);
 }
 
-VkResult acquire_next_image2_hook(VkDevice device, const VkAcquireNextImageInfoKHR* acquire_info, uint32_t* image_index) {
+inline VkResult acquire_next_image2_hook(VkDevice device, const VkAcquireNextImageInfoKHR* acquire_info, uint32_t* image_index) {
   if (vk_device == VK_NULL_HANDLE && device != VK_NULL_HANDLE) {
     print("Captured VkDevice via vkAcquireNextImage2KHR: %p\n", (void*)device);
   }
   vk_device = device;
   
   return acquire_next_image2_original(device, acquire_info, image_index);
+}
+
 }

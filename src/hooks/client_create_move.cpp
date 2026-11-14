@@ -1,12 +1,19 @@
-#include "sdk/interfaces/global_vars.hpp"
-#include "sdk/interfaces/steam_friends.hpp"
+export module hooks.client_create_move;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.global_vars;
+export import sdk.interfaces.steam_friends;
+export import sdk.classes.player;
+export import core.entity_cache;
 
-#include "sdk/classes/player.hpp"
+export extern "C++" {
 
-#include "core/entity_cache.hpp"
 
-void (*client_create_move_original)(void*, int, float, bool);
 
-void client_create_move_hook(void* me, int sequence_number, float input_sample_frametime, bool active) {
+inline void (*client_create_move_original)(void*, int, float, bool);
+
+inline void client_create_move_hook(void* me, int sequence_number, float input_sample_frametime, bool active) {
   client_create_move_original(me, sequence_number, input_sample_frametime, active);
+}
+
 }

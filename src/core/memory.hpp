@@ -1,6 +1,8 @@
-#ifndef CORE_MEMORY_HPP
-#define CORE_MEMORY_HPP
+export module core.memory;
+export import std.compat;
+export import core.print;
 
+export extern "C++" {
 // Safe(r) access to game memory and ELF module base resolution.
 //
 // Every read/write of a game object field and every virtual call into the game
@@ -10,16 +12,6 @@
 //    cannot optimise these checks away when the base is a `this` pointer);
 //  - reads use memcpy, avoiding strict-aliasing / alignment undefined behaviour;
 //  - virtual calls state their full signature once, in one place.
-
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <type_traits>
-
-#include "core/print.hpp"
 
 namespace mem {
 
@@ -85,7 +77,7 @@ inline decltype(auto) call_vfunc(const void* object, std::size_t index, CallArgs
 
 } // namespace mem
 
-static void* get_module_base_address(std::string module_name) {
+inline void* get_module_base_address(std::string module_name) {
   std::ifstream file;
   file.open("/proc/self/maps");
 
@@ -121,5 +113,4 @@ static void* get_module_base_address(std::string module_name) {
 
   return (void*)result;  
 }
-
-#endif
+}

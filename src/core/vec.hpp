@@ -1,6 +1,7 @@
-#ifndef VEC_HPP
-#define VEC_HPP
+export module core.vec;
+export import std.compat;
 
+export extern "C++" {
 struct Vec2 {
   int x = 0, y = 0;
 };
@@ -140,5 +141,4 @@ struct view_setup {
   bool        m_bViewToProjectionOverride;
   VMatrix     m_ViewToProjection;
 };
-
-#endif
+}

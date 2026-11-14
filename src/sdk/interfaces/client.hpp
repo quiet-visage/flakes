@@ -1,9 +1,12 @@
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+export module sdk.interfaces.client;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "core/vec.hpp"
 
 struct user_cmd {
   void *vmt;
@@ -72,6 +75,7 @@ public:
   }
 };
 
-inline static Client* client;
+inline Client* client;
 
-#endif
+
+}

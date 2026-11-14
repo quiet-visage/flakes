@@ -1,22 +1,17 @@
-#ifndef OBSERVER_TELEMETRY_HPP
-#define OBSERVER_TELEMETRY_HPP
+export module subsystems.observer_telemetry.observer_telemetry;
+export import std.compat;
+export import core.sys;
+export import gui.config;
+export import sdk.interfaces.engine;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.global_vars;
+export import sdk.classes.player;
 
-#include <algorithm>
-#include <cstdio>
-#include <string>
+export extern "C++" {
 
-#include "imgui/imgui.h"
-#include "gui/config.hpp"
+inline bool spectated_1st = false;
 
-#include "sdk/interfaces/engine.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/global_vars.hpp"
-
-#include "sdk/classes/player.hpp"
-
-inline static bool spectated_1st = false;
-
-static void draw_observer_telemetry(void) {
+inline void draw_observer_telemetry(void) {
   spectated_1st = false;
 
   if (config.telemetry.observer_overlay == false) {
@@ -122,4 +117,4 @@ static void draw_observer_telemetry(void) {
   }
 }
 
-#endif
+}

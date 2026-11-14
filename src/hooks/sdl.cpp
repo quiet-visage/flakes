@@ -1,26 +1,27 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_keyboard.h>
-#include <SDL2/SDL_syswm.h>
-#include <GL/glew.h>
+export module hooks.sdl;
+export import std.compat;
+export import core.sys;
+export import imgui.dearimgui;
+export import sdk.interfaces.surface;
+export import core.print;
+export import gui.menu;
+export import gui.indicators;
 
-#include "imgui/dearimgui.hpp"
+export extern "C++" {
 
-#include "sdk/interfaces/surface.hpp"
 
-#include "core/print.hpp"
 
-#include "gui/menu.hpp"
-#include "gui/indicators.hpp"
 
-bool (*poll_event_original)(SDL_Event*) = NULL;
-int  (*peep_events_original)(SDL_Event*, int, SDL_eventaction, int, int) = NULL;
-void (*swap_window_original)(void*) = NULL;
-Uint32 (*get_window_flags_original)(SDL_Window*) = NULL;
-SDL_bool (*get_window_WM_info_original)(SDL_Window* window, SDL_SysWMinfo* info) = NULL;
-void (*get_window_size_original)(SDL_Window* window, int* w, int* h) = NULL;
+
+inline bool (*poll_event_original)(SDL_Event*) = nullptr;
+inline int  (*peep_events_original)(SDL_Event*, int, SDL_eventaction, int, int) = nullptr;
+inline void (*swap_window_original)(void*) = nullptr;
+Uint32 (*get_window_flags_original)(SDL_Window*) = nullptr;
+SDL_bool (*get_window_WM_info_original)(SDL_Window* window, SDL_SysWMinfo* info) = nullptr;
+inline void (*get_window_size_original)(SDL_Window* window, int* w, int* h) = nullptr;
 
 // This filters key events to the game
-int SDLCALL event_filter(void* userdata, SDL_Event* event) {
+int event_filter(void* userdata, SDL_Event* event) {
   if (menu_focused == false) return 1; // Don't filter anything if the menu is closed
 
   
@@ -52,7 +53,7 @@ int SDLCALL event_filter(void* userdata, SDL_Event* event) {
 }
 
 
-bool poll_event_hook(SDL_Event* event) {
+inline bool poll_event_hook(SDL_Event* event) {
   bool ret = poll_event_original(event);
   
   if (sdl_window != nullptr && ImGui::IsImGuiFullyInitialized())
@@ -64,7 +65,7 @@ bool poll_event_hook(SDL_Event* event) {
 }
 
 
-int peep_events_hook(SDL_Event* events, int numevents, SDL_eventaction action, int min, int max) {
+inline int peep_events_hook(SDL_Event* events, int numevents, SDL_eventaction action, int min, int max) {
   int ret = peep_events_original(events, numevents, action, min, max);
 
   /*
@@ -78,8 +79,8 @@ int peep_events_hook(SDL_Event* events, int numevents, SDL_eventaction action, i
 }
 
 
-void swap_window_hook(SDL_Window* window) {
-  static SDL_GLContext original_context = NULL, new_context = NULL;
+inline void swap_window_hook(SDL_Window* window) {
+  static SDL_GLContext original_context = nullptr, new_context = nullptr;
 
   if (!new_context) {
     original_context = SDL_GL_GetCurrentContext();
@@ -150,11 +151,13 @@ SDL_bool get_window_WM_info_hook(SDL_Window* window, SDL_SysWMinfo* info) {
 }
 
 // Used for grabbing the SDL_Window handle when in Vulkan mode
-void get_window_size_hook(SDL_Window* window, int* w, int* h) {
+inline void get_window_size_hook(SDL_Window* window, int* w, int* h) {
   if (sdl_window == nullptr && window != nullptr) {
     print("Captured SDL_Window* via SDL_GetWindowSize: %p\n", (void*)window);
   }
   sdl_window = window;
   
   get_window_size_original(window, w, h);
+}
+
 }

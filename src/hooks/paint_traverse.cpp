@@ -1,32 +1,33 @@
-#include "core/memory.hpp"
-#include "subsystems/spatial_telemetry/spatial_telemetry.hpp"
-#include "subsystems/spatial_telemetry/spatial_telemetry_player.cpp"
-#include "subsystems/spatial_telemetry/spatial_telemetry_entity.cpp"
+export module hooks.paint_traverse;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import subsystems.spatial_telemetry.spatial_telemetry_hpp;
+export import subsystems.spatial_telemetry.spatial_telemetry_player;
+export import subsystems.spatial_telemetry.spatial_telemetry_entity;
+export import subsystems.graph_navigation.draw_navmesh;
+export import gui.config;
+export import sdk.interfaces.engine;
+export import sdk.interfaces.surface;
+export import sdk.interfaces.entity_list;
+export import sdk.classes.player;
 
-#include "subsystems/graph_navigation/draw_navmesh.cpp"
+export extern "C++" {
 
-#include <cstring>
-#include <unistd.h>
-#include <wchar.h>
-#include <string>
 
-#include "gui/config.hpp"
 
-#include "sdk/interfaces/engine.hpp"
-#include "sdk/interfaces/surface.hpp"
-#include "sdk/interfaces/entity_list.hpp"
 
-#include "sdk/classes/player.hpp"
+
  
-void (*paint_traverse_original)(void*, void*, bool, bool) = NULL;
+inline void (*paint_traverse_original)(void*, void*, bool, bool) = nullptr;
 
-void* vgui;
+inline void* vgui;
 const char* get_panel_name(void* panel) {
     return mem::call_vfunc<const char*(void*)>(vgui, 37, panel);
 }
 
 
-void paint_traverse_hook(void* me, void* panel, bool force_repaint, bool allow_force) {
+inline void paint_traverse_hook(void* me, void* panel, bool force_repaint, bool allow_force) {
   std::string panel_name = get_panel_name(panel);
 
   // TEMP DEBUG
@@ -143,5 +144,7 @@ void paint_traverse_hook(void* me, void* panel, bool force_repaint, bool allow_f
       render_entity_telemetry(i, player->to_entity());
     }
   }
+
+}
 
 }

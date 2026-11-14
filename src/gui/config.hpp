@@ -1,18 +1,18 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+export module gui.config;
+export import std.compat;
+export import core.sys;
+export import sdk.classes.player;
+export import core.vec;
 
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_scancode.h>
-#include <SDL2/SDL_mouse.h>
-#include <SDL2/SDL_keyboard.h>
+export extern "C++" {
 
-#include "sdk/classes/player.hpp"
-#include "core/vec.hpp"
 
-struct button {
+
+struct key_button {
   int button;
   bool waiting = false;
 };
+using button = key_button;
 
 struct VectorTargetingConfig {
   bool master = false;
@@ -28,7 +28,7 @@ struct VectorTargetingConfig {
   
   bool silent = false;
   
-  struct button key = {.button = -SDL_BUTTON_X1};
+  key_button key = {-SDL_BUTTON_X1, false};
   bool use_key = true;
   
   float fov = 45;
@@ -45,7 +45,7 @@ struct VectorTargetingConfig {
 struct ActiveDeflectionConfig {
   bool master = false;
 
-  struct button key = {.button = -SDL_BUTTON_X1};
+  key_button key = {-SDL_BUTTON_X1, false};
   bool use_key = true;
 
   float fov = 90.0f;
@@ -65,10 +65,10 @@ struct SpatialTelemetryConfig {
   bool master = false;
   bool observer_overlay = false;
 
-  struct Player {
-    RGBA_float enemy_color = {.r = 1, .g = 0.501960784, .b = 0, .a = 1};
-    RGBA_float team_color = {.r = 1, .g = 1, .b = 1, .a = 1};
-    RGBA_float friend_color = {.r = 0, .g = 0.862745098, .b = 0.31372549, .a = 1};
+  struct PlayerConfig {
+    RGBA_float enemy_color = {1.0f, 0.501960784f, 0.0f, 1.0f};
+    RGBA_float team_color = {1.0f, 1.0f, 1.0f, 1.0f};
+    RGBA_float friend_color = {0.0f, 0.862745098f, 0.31372549f, 1.0f};
     
     bool box = false;
     bool health_bar = false;    
@@ -107,7 +107,7 @@ struct SpatialTelemetryConfig {
 struct MaterialOverrideConfig {
   bool master = false;
 
-  struct Player {
+  struct PlayerConfig {
     bool enemy = false;
 
     enum class MaterialType {
@@ -122,33 +122,33 @@ struct MaterialOverrideConfig {
       bool wireframe = false;
     };
     
-    RGBA_float enemy_color = {.r = .8, .g = 0.701960784, .b = .1, .a = 1};
+    RGBA_float enemy_color = {.8f, 0.701960784f, .1f, 1.0f};
     MaterialType enemy_material_type = MaterialType::FLAT;
-    RGBA_float enemy_color_z = {.r = 1, .g = 0.2, .b = .2, .a = 1};
+    RGBA_float enemy_color_z = {1.0f, 0.2f, .2f, 1.0f};
     MaterialType enemy_material_z_type = MaterialType::FLAT;
     PassFlags enemy_flags;
-    RGBA_float enemy_overlay_color = {.r = .8, .g = 0.701960784, .b = .1, .a = 1};
+    RGBA_float enemy_overlay_color = {.8f, 0.701960784f, .1f, 1.0f};
     MaterialType enemy_overlay_material_type = MaterialType::NONE;
-    RGBA_float enemy_overlay_color_z = {.r = 1, .g = 0.2, .b = .2, .a = 1};
+    RGBA_float enemy_overlay_color_z = {1.0f, 0.2f, .2f, 1.0f};
     MaterialType enemy_overlay_material_z_type = MaterialType::NONE;
     PassFlags enemy_overlay_flags;
 
     bool team = false;    
-    RGBA_float team_color = {.r = 0, .g = 1, .b = 0, .a = 1};
+    RGBA_float team_color = {0.0f, 1.0f, 0.0f, 1.0f};
     MaterialType team_material_type = MaterialType::SHADED;
-    RGBA_float team_color_z = {.r = 0, .g = 0.25, .b = 1, .a = 1};    
+    RGBA_float team_color_z = {0.0f, 0.25f, 1.0f, 1.0f};    
     MaterialType team_material_z_type = MaterialType::SHADED;
     PassFlags team_flags;
     
     bool friends = false;
-    RGBA_float friend_color = {.r = 0, .g = 0.632745098, .b = 0.31372549, .a = 1};
+    RGBA_float friend_color = {0.0f, 0.632745098f, 0.31372549f, 1.0f};
     MaterialType friend_material_type = MaterialType::FLAT;
-    RGBA_float friend_color_z = {.r = 0, .g = 1, .b = 0.20272549, .a = 1};
+    RGBA_float friend_color_z = {0.0f, 1.0f, 0.20272549f, 1.0f};
     MaterialType friend_material_z_type = MaterialType::FLAT;
     PassFlags friends_flags;
 
     bool local = false;
-    RGBA_float local_color = {.r = 0, .g = 0.8, .b = 0.35, .a = 1};
+    RGBA_float local_color = {0.0f, 0.8f, 0.35f, 1.0f};
     MaterialType local_material_type = MaterialType::SHADED;
     PassFlags local_flags;
   } player;
@@ -162,7 +162,7 @@ struct ViewportConfig {
   } filters;
   
   struct CameraFrustum {
-    struct button key = {.button = SDL_SCANCODE_LALT};
+    key_button key = {SDL_SCANCODE_LALT, false};
     bool enabled = false;
     float z = 150.0f;
     float y = 20.0f;
@@ -189,7 +189,7 @@ struct SimulationConfig {
 
     bool tick_scheduler = false;
     bool tick_telemetry_widget = false;
-    struct button recharge_button = {.button = SDL_SCANCODE_LSHIFT};
+    key_button recharge_button = {SDL_SCANCODE_LSHIFT, false};
   } directives;
   
   struct Automation {
@@ -248,19 +248,19 @@ struct Config {
   DiagnosticsConfig diagnostics;
 };
 
-inline static Config config;
+inline Config config;
 
 
-static bool is_button_down(struct button button) {
+inline bool is_button_down(key_button button) {
   if (button.button >= 0) {
-    const uint8_t* keys = SDL_GetKeyboardState(NULL);
+    const uint8_t* keys = SDL_GetKeyboardState(nullptr);
   
     if (keys[button.button] == 1)
       return true;
 
     return false;
   } else {
-    Uint32 mouse_state = SDL_GetMouseState(NULL, NULL);
+    Uint32 mouse_state = SDL_GetMouseState(nullptr, nullptr);
 
     if (mouse_state & SDL_BUTTON(-button.button))
       return true;
@@ -271,4 +271,5 @@ static bool is_button_down(struct button button) {
   return false;
 }
 
-#endif
+
+}

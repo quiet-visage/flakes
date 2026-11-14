@@ -4,18 +4,27 @@ MAKEFLAGS := --jobs=$(shell nproc)
 
 INCLUDES = -Isrc -Ivendor -Ivendor/funchook/include
 
-CFLAGS= -shared -fPIC -std=c++23 -g --no-gnu-unique -MMD -MP $(INCLUDES)
+CFLAGS= -shared -fPIC -std=c++23 -fmodules -g --no-gnu-unique $(INCLUDES)
 
 LDFLAGS= -l:libGLEW.so.2.1 -lSDL2 -lvulkan -lcurl vendor/funchook/libfunchook.a vendor/funchook/libdistorm.a -z execstack -g
 
-OBJ_FILES =  src/main.cpp.o # Unity build
-OBJ_FILES += vendor/libsigscan/libsigscan.c.o # Sigscan library
-OBJ_FILES += vendor/imgui/imgui_tables.cpp.o vendor/imgui/imgui_draw.cpp.o vendor/imgui/imgui_impl_sdl2.cpp.o vendor/imgui/imgui_demo.cpp.o vendor/imgui/imgui_impl_opengl3.cpp.o vendor/imgui/imgui_impl_vulkan.cpp.o vendor/imgui/imgui_widgets.cpp.o vendor/imgui/imgui.cpp.o vendor/imgui/imgui_stdlib.cpp.o # GUI library and OpenGL/Vulkan wrappers
-OBJ_FILES += vendor/micropather/micropather.cpp.o # Path solving library
-OBJ_FILES += vendor/md5/md5.cpp.o # Checksum PRNG
-# OBJ_FILES += bitbuf/bitbuf.cpp.o
+include modules.mk
 
-OBJS = $(addprefix obj/, $(OBJ_FILES)) 
+VENDOR_OBJS = \
+  obj/vendor/libsigscan/libsigscan.c.o \
+  obj/vendor/imgui/imgui_tables.cpp.o \
+  obj/vendor/imgui/imgui_draw.cpp.o \
+  obj/vendor/imgui/imgui_impl_sdl2.cpp.o \
+  obj/vendor/imgui/imgui_demo.cpp.o \
+  obj/vendor/imgui/imgui_impl_opengl3.cpp.o \
+  obj/vendor/imgui/imgui_impl_vulkan.cpp.o \
+  obj/vendor/imgui/imgui_widgets.cpp.o \
+  obj/vendor/imgui/imgui.cpp.o \
+  obj/vendor/imgui/imgui_stdlib.cpp.o \
+  obj/vendor/micropather/micropather.cpp.o \
+  obj/vendor/md5/md5.cpp.o
+
+OBJS = $(MODULE_OBJS) $(VENDOR_OBJS)
 
 BIN = tf2.so
 
@@ -36,7 +45,7 @@ all:
 endif
 
 clean:
-	rm -rf obj
+	rm -rf obj gcm.cache
 	rm -f $(BIN)
 
 sync:
@@ -59,12 +68,10 @@ $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@if [ "$$(execstack -q $@ 2>/dev/null)" = "X $@" ]; then execstack -c $@; fi
 
-obj/%.cpp.o: %.cpp
+obj/vendor/%.cpp.o: vendor/%.cpp
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-obj/%.c.o: %.c
+obj/vendor/%.c.o: vendor/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
-
--include $(OBJS:.o=.d)

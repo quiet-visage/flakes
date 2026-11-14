@@ -1,8 +1,11 @@
-#ifndef MOVE_HELPER_HPP
-#define MOVE_HELPER_HPP
+export module sdk.interfaces.move_helper;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
 class Player;
 
 class MoveHelper {
@@ -12,6 +15,7 @@ public:
   }
 };
 
-inline static MoveHelper* move_helper;
+inline MoveHelper* move_helper;
 
-#endif
+
+}

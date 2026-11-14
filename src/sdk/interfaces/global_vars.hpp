@@ -1,5 +1,8 @@
-#ifndef GLOBAL_VARS_HPP
-#define GLOBAL_VARS_HPP
+export module sdk.interfaces.global_vars;
+export import std.compat;
+export import core.sys;
+
+export extern "C++" {
 
 class GlobalVars {
 public:
@@ -20,6 +23,7 @@ public:
   int nTimestampRandomizeWindow;
 };
 
-inline static GlobalVars* global_vars;
+inline GlobalVars* global_vars;
 
-#endif
+
+}

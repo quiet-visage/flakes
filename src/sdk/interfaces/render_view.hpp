@@ -1,12 +1,15 @@
-#ifndef RENDER_VIEW_HPP
-#define RENDER_VIEW_HPP
+export module sdk.interfaces.render_view;
+export import std.compat;
+export import core.sys;
+export import core.memory;
+export import core.vec;
+export import sdk.interfaces.client;
+export import sdk.interfaces.engine;
+
+export extern "C++" {
 
 
-#include "core/memory.hpp"
-#include "core/vec.hpp"
 
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/engine.hpp"
 
 
 enum MaterialVarFlags {
@@ -105,7 +108,8 @@ public:
   
 };
 
-inline static RenderView* render_view;
+inline RenderView* render_view;
 
-#endif
 
+
+}

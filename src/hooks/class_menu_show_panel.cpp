@@ -1,12 +1,16 @@
-#include <unistd.h>
+export module hooks.class_menu_show_panel;
+export import std.compat;
+export import core.sys;
+export import sdk.interfaces.entity_list;
+export import gui.config;
 
-#include "sdk/interfaces/entity_list.hpp"
+export extern "C++" {
 
-#include "gui/config.hpp"
 
-void (*class_menu_show_panel_original)(void*, bool) = NULL;
 
-void class_menu_show_panel_hook(void* me, bool show) {
+inline void (*class_menu_show_panel_original)(void*, bool) = nullptr;
+
+inline void class_menu_show_panel_hook(void* me, bool show) {
   Player* localplayer = entity_list->get_localplayer();
   if (localplayer == nullptr) {
     class_menu_show_panel_original(me, show);
@@ -18,4 +22,6 @@ void class_menu_show_panel_hook(void* me, bool show) {
   } else {
     class_menu_show_panel_original(me, show);
   }
+}
+
 }

@@ -1,75 +1,74 @@
-#include <SDL2/SDL_events.h>
-#include <string>
-#include <unistd.h>
-#include <csignal>
-#include <format>
+export module main_mod;
+export import std.compat;
+export import core.sys;
+export import core.print;
+export import core.assert;
+export import core.vec;
+export import core.memory;
+export import sdk.classes.keyvalues;
+export import sdk.interfaces.engine;
+export import sdk.interfaces.client;
+export import sdk.interfaces.netvars;
+export import sdk.interfaces.entity_list;
+export import sdk.interfaces.debug_overlay;
+export import sdk.interfaces.surface;
+export import sdk.interfaces.engine_trace;
+export import sdk.interfaces.render_view;
+export import sdk.interfaces.material_system;
+export import sdk.interfaces.model_render;
+export import sdk.interfaces.convar_system;
+export import sdk.interfaces.prediction;
+export import sdk.interfaces.steam_client;
+export import sdk.interfaces.steam_friends;
+export import sdk.interfaces.input;
+export import sdk.interfaces.attribute_manager;
+export import sdk.interfaces.global_vars;
+export import sdk.interfaces.move_helper;
+export import sdk.interfaces.game_movement;
+export import sdk.interfaces.client_state;
+export import sdk.interfaces.game_event_manager;
+export import hooks.sdl;
+export import hooks.vulkan;
+export import hooks.hooks;
+export import hooks.client_mode_create_move;
+export import hooks.client_create_move;
+export import hooks.cl_move;
+export import hooks.paint_traverse;
+export import hooks.override_view;
+export import hooks.draw_view_model;
+export import hooks.in_cond;
+export import hooks.draw_model_execute;
+export import hooks.load_white_list;
+export import hooks.should_draw_local_player;
+export import hooks.should_draw_this_player;
+export import hooks.draw_view_models;
+export import hooks.fire_event_client_side;
+export import hooks.frame_stage_notify;
+export import hooks.intro_menu_on_tick;
+export import hooks.class_menu_show_panel;
+export import hooks.team_menu_show_panel;
+export import hooks.map_info_menu_show_panel;
+export import hooks.text_window_show_panel;
+export import hooks.scene_end;
+export import core.random_seed;
 
-#include "core/print.hpp"
-#include "core/assert.hpp"
+export extern "C++" {
+struct ModelRenderInfo;
 
-#include "core/vec.hpp"
-#include "core/memory.hpp"
 
-#include "sdk/classes/keyvalues.hpp"
 
-#include "sdk/interfaces/engine.hpp"
-#include "sdk/interfaces/client.hpp"
-#include "sdk/interfaces/netvars.hpp"
-#include "sdk/interfaces/entity_list.hpp"
-#include "sdk/interfaces/debug_overlay.hpp"
-#include "sdk/interfaces/surface.hpp"
-#include "sdk/interfaces/engine_trace.hpp"
-#include "sdk/interfaces/render_view.hpp"
-#include "sdk/interfaces/material_system.hpp"
-#include "sdk/interfaces/model_render.hpp"
-#include "sdk/interfaces/convar_system.hpp"
-#include "sdk/interfaces/prediction.hpp"
-#include "sdk/interfaces/steam_client.hpp"
-#include "sdk/interfaces/steam_friends.hpp"
-#include "sdk/interfaces/input.hpp"
-#include "sdk/interfaces/attribute_manager.hpp"
-#include "sdk/interfaces/global_vars.hpp"
-#include "sdk/interfaces/move_helper.hpp"
-#include "sdk/interfaces/game_movement.hpp"
-#include "sdk/interfaces/client_state.hpp"
-#include "sdk/interfaces/game_event_manager.hpp"
 
-#include "libsigscan/libsigscan.h"
-#include "funchook.h"
 
-#include "hooks/sdl.cpp"
-#include "hooks/vulkan.cpp"
 
-#include "hooks/hooks.cpp"
-#include "hooks/client_mode_create_move.cpp"
-#include "hooks/client_create_move.cpp"
-#include "hooks/cl_move.cpp"
-#include "hooks/paint_traverse.cpp"
-#include "hooks/override_view.cpp"
-#include "hooks/draw_view_model.cpp"
-#include "hooks/in_cond.cpp"
-#include "hooks/draw_model_execute.cpp"
-#include "hooks/load_white_list.cpp"
-#include "hooks/should_draw_local_player.cpp"
-#include "hooks/should_draw_this_player.cpp"
-#include "hooks/draw_view_models.cpp"
-#include "hooks/fire_event_client_side.cpp"
-#include "hooks/frame_stage_notify.cpp"
-#include "hooks/intro_menu_on_tick.cpp"
-#include "hooks/class_menu_show_panel.cpp"
-#include "hooks/team_menu_show_panel.cpp"
-#include "hooks/map_info_menu_show_panel.cpp"
-#include "hooks/text_window_show_panel.cpp"
-#include "hooks/scene_end.cpp"
 
-#include "core/random_seed.hpp"
 
-void** client_mode_vtable;
-void** vgui_vtable;
-void** client_vtable;
-void** model_render_vtable;
-void** game_event_manager_vtable;
-void** render_view_vtable;
+
+inline void** client_mode_vtable;
+inline void** vgui_vtable;
+inline void** client_vtable;
+inline void** model_render_vtable;
+inline void** game_event_manager_vtable;
+inline void** render_view_vtable;
 
 funchook_t* funchook;
 
@@ -179,9 +178,9 @@ void entry() {
 
   client_vtable = *(void ***)client;
   void* hud_process_input_addr = client_vtable[10];
-  __uint32_t client_mode_eaddr = *(__uint32_t *)((__uint64_t)(hud_process_input_addr) + 0x3);
-  void* client_mode_next_instruction = (void *)((__uint64_t)(hud_process_input_addr) + 0x7);
-  void* client_mode_interface = *(void **)((__uint64_t)(client_mode_next_instruction) + client_mode_eaddr);
+  uint32_t client_mode_eaddr = *(uint32_t *)((uintptr_t)(hud_process_input_addr) + 0x3);
+  void* client_mode_next_instruction = (void *)((uintptr_t)(hud_process_input_addr) + 0x7);
+  void* client_mode_interface = *(void **)((uintptr_t)(client_mode_next_instruction) + client_mode_eaddr);
   error_assert(client_mode_interface == nullptr, "ClientModeShared is missing");
   
   unsigned long hud_update = (unsigned long)client_vtable[11];
@@ -367,7 +366,7 @@ void entry() {
       print("vkCreateInstance result: %d (instance: %p)\n", (int)inst_res, (void*)vk_instance);
   
       uint32_t gpu_count = 0;
-      vkEnumeratePhysicalDevices(vk_instance, &gpu_count, NULL);
+      vkEnumeratePhysicalDevices(vk_instance, &gpu_count, nullptr);
       print("Vulkan physical devices found: %u\n", gpu_count);
       IM_ASSERT(gpu_count > 0);
 
@@ -391,7 +390,7 @@ void entry() {
 
       delete[] gpus;
 
-      vkGetPhysicalDeviceQueueFamilyProperties(vk_physical_device, &count, NULL);
+      vkGetPhysicalDeviceQueueFamilyProperties(vk_physical_device, &count, nullptr);
 
       queue_families = (VkQueueFamilyProperties*)malloc(count*sizeof(VkQueueFamilyProperties));
 
@@ -601,3 +600,5 @@ void __exit() {
     surface->set_cursor_visible(!menu_focused);
 }
 
+
+}
