@@ -6,9 +6,10 @@ tf2.so
 
 # Objects
 *.o
+obj/
 
-# Libs
-libs/
+# Built vendor artifacts
+vendor/funchook/
 
 # Nohup
 nohup.out

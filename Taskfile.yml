@@ -16,10 +16,10 @@ tasks:
     dir: '{{.SRC_DIR}}'
     cmds:
       - |
-        if [ -f /.toolboxenv ]; then
-          make -C "{{.SRC_DIR}}" all
+        if [ -f /.toolboxenv ] || [ -f /run/.toolboxenv ] || [ -f /run/.containerenv ]; then
+          make -C "{{.SRC_DIR}}" tf2.so
         else
-          toolbox run -c {{.TOOLBOX_NAME}} make -C "{{.SRC_DIR}}" all
+          toolbox run -c {{.TOOLBOX_NAME}} make -C "{{.SRC_DIR}}" tf2.so
         fi
       - task: sync
 
@@ -27,9 +27,9 @@ tasks:
     desc: Copy built tf2.so, inject.sh, Taskfile.yml, and Makefile to Steam Flatpak directory
     cmds:
       - mkdir -p "{{.STEAM_DIR}}"
-      - chmod +x "{{.SRC_DIR}}/inject.sh"
+      - chmod +x "{{.SRC_DIR}}/scripts/inject.sh"
       - cp -f --remove-destination "{{.SRC_DIR}}/tf2.so" "{{.STEAM_DIR}}/tf2.so"
-      - cp -f --remove-destination "{{.SRC_DIR}}/inject.sh" "{{.STEAM_DIR}}/inject.sh"
+      - cp -f --remove-destination "{{.SRC_DIR}}/scripts/inject.sh" "{{.STEAM_DIR}}/inject.sh"
       - cp -f --remove-destination "{{.SRC_DIR}}/Taskfile.yml" "{{.STEAM_DIR}}/Taskfile.yml"
       - cp -f --remove-destination "{{.SRC_DIR}}/Makefile" "{{.STEAM_DIR}}/Makefile"
       - chmod +x "{{.STEAM_DIR}}/inject.sh"
