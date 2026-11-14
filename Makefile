@@ -16,26 +16,32 @@ OBJS = $(addprefix obj/, $(OBJ_FILES))
 
 BIN = tf2.so
 
+SRC_DIR = /var/home/anon/projects/Flakes
 STEAM_DIR = /var/home/anon/.var/app/com.valvesoftware.Steam/TeamFortress2-Linux-Internal
 TOOLBOX_NAME = fedora-toolbox-44
+IN_TOOLBOX := $(wildcard /.toolboxenv)
 
 .PHONY: all clean debug sync inject logs
 
 #-------------------------------------------------------------------------------
 
+ifneq ($(IN_TOOLBOX),)
 all: $(BIN)
-	@if [ "$$(execstack -q $(BIN) 2>/dev/null)" = "X $(BIN)" ]; then execstack -c $(BIN); fi
+else
+all:
+	toolbox run -c $(TOOLBOX_NAME) make -C $(SRC_DIR) all
+endif
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(BIN)
 
 sync:
-	chmod +x /var/home/anon/projects/Flakes/inject.sh
-	cp -f --remove-destination /var/home/anon/projects/Flakes/tf2.so $(STEAM_DIR)/tf2.so
-	cp -f --remove-destination /var/home/anon/projects/Flakes/inject.sh $(STEAM_DIR)/inject.sh
-	cp -f --remove-destination /var/home/anon/projects/Flakes/Taskfile.yml $(STEAM_DIR)/Taskfile.yml
-	cp -f --remove-destination /var/home/anon/projects/Flakes/Makefile $(STEAM_DIR)/Makefile
+	chmod +x $(SRC_DIR)/inject.sh
+	cp -f --remove-destination $(SRC_DIR)/tf2.so $(STEAM_DIR)/tf2.so
+	cp -f --remove-destination $(SRC_DIR)/inject.sh $(STEAM_DIR)/inject.sh
+	cp -f --remove-destination $(SRC_DIR)/Taskfile.yml $(STEAM_DIR)/Taskfile.yml
+	cp -f --remove-destination $(SRC_DIR)/Makefile $(STEAM_DIR)/Makefile
 	chmod +x $(STEAM_DIR)/inject.sh
 
 inject: sync
@@ -48,6 +54,7 @@ logs:
 
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	@if [ "$$(execstack -q $@ 2>/dev/null)" = "X $@" ]; then execstack -c $@; fi
 
 obj/%.cpp.o: %.cpp
 	@mkdir -p $(dir $@)

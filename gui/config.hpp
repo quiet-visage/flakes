@@ -42,6 +42,25 @@ struct Aim {
   bool ignore_friends = true;
 };
 
+struct Airblast {
+  bool master = false;
+
+  struct button key = {.button = -SDL_BUTTON_X1};
+  bool use_key = true;
+
+  float fov = 90.0f;
+  float range = 256.0f;
+
+  struct Projectiles {
+    bool rockets = true;
+    bool grenades = true;
+    bool stickies = true;
+    bool arrows = true;
+    bool flares = true;
+    bool throwables = true;
+  } projectiles;
+};
+
 struct Esp {
   bool master = false;
 
@@ -220,6 +239,7 @@ struct Debug {
 
 struct Config {
   Aim aimbot;
+  Airblast airblast;
   Esp esp;
   Chams chams;
   Visuals visuals;

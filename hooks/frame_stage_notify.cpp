@@ -49,7 +49,7 @@ void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
 
   case FRAME_NET_UPDATE_END:
     {
-      if (!config.aimbot.master && !config.esp.master && !config.navbot.master) {
+      if (!config.aimbot.master && !config.airblast.master && !config.esp.master && !config.navbot.master) {
 	break;
       }
 
@@ -93,7 +93,11 @@ void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
 	case class_id::SNIPER_DOT:
 	  entity_cache[class_id::SNIPER_DOT].push_back(entity); break;
 
-	  
+	default:
+	  if (entity->get_projectile_type() != projectile_type::NONE) {
+	    entity_cache[class_id::PROJECTILE].push_back(entity);
+	  }
+	  break;
 	}
 
       }

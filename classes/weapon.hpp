@@ -903,6 +903,21 @@ public:
     return (next_secondary_attack <= time && next_attack <= time); 
   }
 
+  bool can_airblast() {
+    int weapon_type_id = this->get_type_id();
+    if (weapon_type_id != TF_WEAPON_FLAMETHROWER &&
+        weapon_type_id != TF_WEAPON_FLAMETHROWER_ROCKET) {
+      return false;
+    }
+
+    short weapon_def_id = this->get_def_id();
+    if (weapon_def_id == Pyro_m_ThePhlogistinator) {
+      return false;
+    }
+
+    return this->can_secondary_attack();
+  }
+
 };
 
 #endif

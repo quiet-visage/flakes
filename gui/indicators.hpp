@@ -14,16 +14,16 @@ static void draw_tickbase_indicator(void) {
   ImGuiStyle* style = &ImGui::GetStyle();
   style->WindowTitleAlign = ImVec2(0.5f, 0.5f);
 
-  ImGui::SetNextWindowSize(ImVec2(220, 68), ImGuiCond_Always);
-  if (ImGui::Begin("Tickbase Charge", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
+  ImGui::SetNextWindowSize(ImVec2(235, 68), ImGuiCond_Always);
+  if (ImGui::Begin("Command Queue Telemetry", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
     const int max_ticks = 24;
     int current_ticks = choked_ticks;
     float fraction = (float)current_ticks / (float)max_ticks;
     if (fraction < 0.0f) fraction = 0.0f;
     if (fraction > 1.0f) fraction = 1.0f;
 
-    char overlay_buf[32];
-    std::snprintf(overlay_buf, sizeof(overlay_buf), "%d / %d Ticks", current_ticks, max_ticks);
+    char overlay_buf[36];
+    std::snprintf(overlay_buf, sizeof(overlay_buf), "%d / %d Buffered Ticks", current_ticks, max_ticks);
 
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.52f, 0.88f, 0.76f, 0.85f));
     ImGui::ProgressBar(fraction, ImVec2(-1.0f, 22.0f), overlay_buf);

@@ -430,8 +430,8 @@ public:
     return mem::read<user_cmd*>(this, offsets::player::current_command);
   }
 
-  void set_current_cmd(user_cmd* user_cmd) {
-    mem::write<user_cmd*>(this, offsets::player::current_command, user_cmd);
+  void set_current_cmd(user_cmd* cmd) {
+    mem::write<user_cmd*>(this, offsets::player::current_command, cmd);
   }
   
   Entity* to_entity(void) {

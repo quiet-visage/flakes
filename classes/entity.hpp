@@ -21,11 +21,24 @@ enum class_id {
   SENTRY = 88,
   TELEPORTER = 89,
   ARROW = 122,
+  BALL_ORNAMENT = 183,
   PLAYER = 247,
+  ARROW_PROJECTILE = 252,
+  BALL_OF_FIRE = 253,
+  CLEAVER = 254,
+  ENERGY_BALL = 255,
   ROCKET = 264,
+  SENTRY_ROCKET = 265,
+  SPELL_FIREBALL = 266,
+  THROWABLE = 276,
+  STUN_BALL = 295,
   PILL_OR_STICKY = 217,
   FLARE = 257,
+  GRAPPLING_HOOK = 258,
   CROSSBOW_BOLT = 259,
+  JAR = 260,
+  JAR_GAS = 261,
+  JAR_MILK = 262,
   SNIPER_DOT = 118,
   CAPTURE_FLAG = 26,
   OBJECTIVE_RESOURCE = 235,
@@ -44,8 +57,19 @@ enum class_id {
   
   // Negative values are reserved by the hack for entity_cache.hpp
   // Entity::get_class_id() will not return any of these.
+  PROJECTILE = -3,
   AMMO = -2,
   HEALTH_PACK = -1,
+};
+
+enum class projectile_type {
+  NONE = 0,
+  ROCKET,
+  GRENADE,
+  STICKY,
+  ARROW,
+  FLARE,
+  THROWABLE,
 };
 
 enum class tf_team {
@@ -172,6 +196,93 @@ public:
   class_id get_class_id(void) {
     void* client_class = get_client_class();
     return mem::read<class_id>(client_class, offsets::client_class::class_id);
+  }
+
+  const char* get_network_name(void) {
+    ClientClass* client_class = (ClientClass*)get_client_class();
+    if (client_class == nullptr || client_class->m_pNetworkName == nullptr) {
+      return "";
+    }
+    return client_class->m_pNetworkName;
+  }
+
+  int get_pipebomb_type(void) {
+    return mem::read<int>(this, NETVAR_OFFSET("DT_TFProjectile_Pipebomb", "m_iType", 0x8FC));
+  }
+
+  projectile_type get_projectile_type(void) {
+    switch (this->get_class_id()) {
+    case class_id::ROCKET:
+    case class_id::SENTRY_ROCKET:
+    case class_id::ENERGY_BALL:
+      return projectile_type::ROCKET;
+
+    case class_id::PILL_OR_STICKY:
+      {
+        int pipe_type = this->get_pipebomb_type();
+        if (pipe_type == 1 || pipe_type == 2) {
+          return projectile_type::STICKY;
+        }
+        return projectile_type::GRENADE;
+      }
+
+    case class_id::ARROW:
+    case class_id::ARROW_PROJECTILE:
+    case class_id::CROSSBOW_BOLT:
+    case class_id::GRAPPLING_HOOK:
+      return projectile_type::ARROW;
+
+    case class_id::FLARE:
+    case class_id::BALL_OF_FIRE:
+    case class_id::SPELL_FIREBALL:
+      return projectile_type::FLARE;
+
+    case class_id::JAR:
+    case class_id::JAR_GAS:
+    case class_id::JAR_MILK:
+    case class_id::CLEAVER:
+    case class_id::STUN_BALL:
+    case class_id::BALL_ORNAMENT:
+    case class_id::THROWABLE:
+      return projectile_type::THROWABLE;
+
+    default:
+      break;
+    }
+
+    const char* net_name = this->get_network_name();
+    if (net_name[0] == 'C' && net_name[1] == 'T' && net_name[2] == 'F') {
+      if (strcmp(net_name, "CTFProjectile_Rocket") == 0 ||
+          strcmp(net_name, "CTFProjectile_SentryRocket") == 0 ||
+          strcmp(net_name, "CTFProjectile_EnergyBall") == 0) {
+        return projectile_type::ROCKET;
+      }
+      if (strcmp(net_name, "CTFGrenadePipebombProjectile") == 0) {
+        int pipe_type = this->get_pipebomb_type();
+        return (pipe_type == 1 || pipe_type == 2) ? projectile_type::STICKY : projectile_type::GRENADE;
+      }
+      if (strcmp(net_name, "CTFProjectile_Arrow") == 0 ||
+          strcmp(net_name, "CTFProjectile_HealingBolt") == 0 ||
+          strcmp(net_name, "CTFProjectile_GrapplingHook") == 0) {
+        return projectile_type::ARROW;
+      }
+      if (strcmp(net_name, "CTFProjectile_Flare") == 0 ||
+          strcmp(net_name, "CTFProjectile_BallOfFire") == 0 ||
+          strcmp(net_name, "CTFProjectile_SpellFireball") == 0) {
+        return projectile_type::FLARE;
+      }
+      if (strcmp(net_name, "CTFProjectile_Jar") == 0 ||
+          strcmp(net_name, "CTFProjectile_JarMilk") == 0 ||
+          strcmp(net_name, "CTFProjectile_JarGas") == 0 ||
+          strcmp(net_name, "CTFProjectile_Cleaver") == 0 ||
+          strcmp(net_name, "CTFStunBall") == 0 ||
+          strcmp(net_name, "CTFBall_Ornament") == 0 ||
+          strcmp(net_name, "CTFProjectile_Throwable") == 0) {
+        return projectile_type::THROWABLE;
+      }
+    }
+
+    return projectile_type::NONE;
   }
 
   int get_tickbase(void) {

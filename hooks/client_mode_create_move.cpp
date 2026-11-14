@@ -14,6 +14,7 @@
 #include "../print.hpp"
 
 #include "../hacks/aimbot/aimbot.cpp"
+#include "../hacks/airblast/airblast.cpp"
 #include "../hacks/bhop/bhop.cpp"
 #include "../hacks/navbot/parse_navmesh.cpp"
 #include "../hacks/navbot/navbot.cpp"
@@ -123,6 +124,7 @@ bool client_mode_create_move_hook(void* me, float sample_time, user_cmd* user_cm
 
   //start_engine_prediction(user_cmd); {
   aimbot(user_cmd, original_view_angles);
+  airblast(user_cmd, original_view_angles);
   movement_fix(user_cmd, original_view_angles, original_forward_move, original_side_move);
   //}
   //end_engine_prediction();

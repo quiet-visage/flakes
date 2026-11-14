@@ -50,7 +50,8 @@ obj/main.cpp.o: main.cpp print.hpp assert.hpp vec.hpp memory.hpp \
  hooks/../gui/../hacks/navbot/../../vec.hpp \
  hooks/../gui/../hacks/pishock/pishock.hpp \
  hooks/../gui/../hacks/pishock/../../gui/config.hpp \
- hooks/../gui/../hacks/pishock/../../print.hpp \
+ hooks/../gui/../hacks/pishock/../../print.hpp hooks/../gui/../print.hpp \
+ hooks/../gui/GoogleSansCodeNerdFont-Medium.ttf \
  hooks/../gui/indicators.hpp hooks/../gui/../hacks/tickbase/tickbase.hpp \
  hooks/../gui/../hacks/tickbase/../../imgui/dearimgui.hpp \
  hooks/../gui/../hacks/tickbase/../../gui/config.hpp \
@@ -76,8 +77,20 @@ obj/main.cpp.o: main.cpp print.hpp assert.hpp vec.hpp memory.hpp \
  hooks/../hacks/aimbot/../../interfaces/convar_system.hpp \
  hooks/../hacks/aimbot/../../gui/config.hpp \
  hooks/../hacks/aimbot/../../entity_cache.hpp \
- hooks/../hacks/aimbot/../../print.hpp hooks/../hacks/bhop/bhop.cpp \
- hooks/../hacks/bhop/../../gui/config.hpp \
+ hooks/../hacks/aimbot/../../print.hpp \
+ hooks/../hacks/airblast/airblast.cpp \
+ hooks/../hacks/airblast/airblast.hpp \
+ hooks/../hacks/airblast/../../interfaces/client.hpp \
+ hooks/../hacks/airblast/../../vec.hpp \
+ hooks/../hacks/airblast/../../math.hpp \
+ hooks/../hacks/airblast/../../interfaces/entity_list.hpp \
+ hooks/../hacks/airblast/../../interfaces/engine_trace.hpp \
+ hooks/../hacks/airblast/../../interfaces/convar_system.hpp \
+ hooks/../hacks/airblast/../../gui/config.hpp \
+ hooks/../hacks/airblast/../../classes/player.hpp \
+ hooks/../hacks/airblast/../../classes/weapon.hpp \
+ hooks/../hacks/airblast/../../entity_cache.hpp \
+ hooks/../hacks/bhop/bhop.cpp hooks/../hacks/bhop/../../gui/config.hpp \
  hooks/../hacks/bhop/../../interfaces/client.hpp \
  hooks/../hacks/bhop/../../interfaces/entity_list.hpp \
  hooks/../hacks/bhop/../../classes/player.hpp \
@@ -249,6 +262,8 @@ hooks/../gui/../hacks/navbot/../../vec.hpp:
 hooks/../gui/../hacks/pishock/pishock.hpp:
 hooks/../gui/../hacks/pishock/../../gui/config.hpp:
 hooks/../gui/../hacks/pishock/../../print.hpp:
+hooks/../gui/../print.hpp:
+hooks/../gui/GoogleSansCodeNerdFont-Medium.ttf:
 hooks/../gui/indicators.hpp:
 hooks/../gui/../hacks/tickbase/tickbase.hpp:
 hooks/../gui/../hacks/tickbase/../../imgui/dearimgui.hpp:
@@ -283,6 +298,18 @@ hooks/../hacks/aimbot/../../interfaces/convar_system.hpp:
 hooks/../hacks/aimbot/../../gui/config.hpp:
 hooks/../hacks/aimbot/../../entity_cache.hpp:
 hooks/../hacks/aimbot/../../print.hpp:
+hooks/../hacks/airblast/airblast.cpp:
+hooks/../hacks/airblast/airblast.hpp:
+hooks/../hacks/airblast/../../interfaces/client.hpp:
+hooks/../hacks/airblast/../../vec.hpp:
+hooks/../hacks/airblast/../../math.hpp:
+hooks/../hacks/airblast/../../interfaces/entity_list.hpp:
+hooks/../hacks/airblast/../../interfaces/engine_trace.hpp:
+hooks/../hacks/airblast/../../interfaces/convar_system.hpp:
+hooks/../hacks/airblast/../../gui/config.hpp:
+hooks/../hacks/airblast/../../classes/player.hpp:
+hooks/../hacks/airblast/../../classes/weapon.hpp:
+hooks/../hacks/airblast/../../entity_cache.hpp:
 hooks/../hacks/bhop/bhop.cpp:
 hooks/../hacks/bhop/../../gui/config.hpp:
 hooks/../hacks/bhop/../../interfaces/client.hpp:

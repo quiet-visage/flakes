@@ -12,24 +12,26 @@ tasks:
       - task: inject
 
   build:
-    desc: Build tf2.so and clear executable stack flag
+    desc: Build tf2.so inside Toolbx (or directly if already in Toolbx) and sync
     dir: '{{.SRC_DIR}}'
     cmds:
-      - make -j$(nproc)
       - |
-        if [ "$(execstack -q tf2.so)" = "X tf2.so" ]; then
-          execstack -c tf2.so
+        if [ -f /.toolboxenv ]; then
+          make -C "{{.SRC_DIR}}" all
+        else
+          toolbox run -c {{.TOOLBOX_NAME}} make -C "{{.SRC_DIR}}" all
         fi
       - task: sync
 
   sync:
-    desc: Copy built tf2.so, inject.sh, and Taskfile.yml to Steam Flatpak directory
+    desc: Copy built tf2.so, inject.sh, Taskfile.yml, and Makefile to Steam Flatpak directory
     cmds:
       - mkdir -p "{{.STEAM_DIR}}"
       - chmod +x "{{.SRC_DIR}}/inject.sh"
       - cp -f --remove-destination "{{.SRC_DIR}}/tf2.so" "{{.STEAM_DIR}}/tf2.so"
       - cp -f --remove-destination "{{.SRC_DIR}}/inject.sh" "{{.STEAM_DIR}}/inject.sh"
       - cp -f --remove-destination "{{.SRC_DIR}}/Taskfile.yml" "{{.STEAM_DIR}}/Taskfile.yml"
+      - cp -f --remove-destination "{{.SRC_DIR}}/Makefile" "{{.STEAM_DIR}}/Makefile"
       - chmod +x "{{.STEAM_DIR}}/inject.sh"
 
   ptrace:
