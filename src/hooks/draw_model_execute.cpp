@@ -49,11 +49,14 @@ struct ModelRenderInfo {
 };
 
 void draw_model_execute_hook(void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {  
-  
+  if (pinfo == nullptr || pinfo->entity_index <= 0) {
+    DME_RETURN;
+  }
+
   Entity* entity = entity_list->entity_from_index(pinfo->entity_index);
   if (entity == nullptr) {
     DME_RETURN;
   }
 
-  run_material_override(entity, me, state, pinfo, bone_to_world);
+  apply_material_override(entity, me, state, pinfo, bone_to_world);
 }

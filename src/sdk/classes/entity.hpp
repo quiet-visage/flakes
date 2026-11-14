@@ -174,6 +174,9 @@ public:
   
   const char* get_model_name(void) {
     const void* model = mem::read<const void*>(this, offsets::entity::model);
+    if (model == nullptr) {
+      return "";
+    }
     const char* name = mem::read<const char*>(model, offsets::entity::model_name);
     return name != nullptr ? name : "";
   }
@@ -190,17 +193,23 @@ public:
   
   void* get_client_class(void) {
     void* networkable = get_networkable();
+    if (networkable == nullptr || *(void**)networkable == nullptr) {
+      return nullptr;
+    }
     return mem::call_vfunc<void*()>(networkable, 2);
   }
   
   class_id get_class_id(void) {
     void* client_class = get_client_class();
+    if (client_class == nullptr || (uintptr_t)client_class < 0x10000) {
+      return (class_id)0;
+    }
     return mem::read<class_id>(client_class, offsets::client_class::class_id);
   }
 
   const char* get_network_name(void) {
     ClientClass* client_class = (ClientClass*)get_client_class();
-    if (client_class == nullptr || client_class->m_pNetworkName == nullptr) {
+    if (client_class == nullptr || (uintptr_t)client_class < 0x10000 || client_class->m_pNetworkName == nullptr) {
       return "";
     }
     return client_class->m_pNetworkName;
@@ -344,7 +353,7 @@ public:
   }
 
   bool is_base_combat_weapon(void) {
-    return mem::call_vfunc<bool()>(this, 138);
+    return mem::call_vfunc<bool()>(this, 191);
   }
   
 };

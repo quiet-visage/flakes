@@ -347,11 +347,11 @@ public:
 
 
   float get_invisibility(void) {
-    return mem::read<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x178));
+    return mem::read<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x1FF0));
   }
 
   void set_invisibility(float value) {
-    mem::write<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x178), value);
+    mem::write<float>(this, NETVAR_OFFSET("DT_TFPlayer", "m_flInvisChangeCompleteTime", 0x1FF0), value);
   }
   
   bool in_cond(tf_cond condition) {

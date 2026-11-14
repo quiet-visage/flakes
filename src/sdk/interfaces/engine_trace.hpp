@@ -147,9 +147,15 @@ struct trace_t {
 
 
 //add a namespace or class for these functions and vars
-bool should_hit_entity(struct trace_filter* interface, Entity* entity, int contents_mask) {
+bool should_hit_entity(struct trace_filter* interface, Entity* handle_entity, int contents_mask) {
+  if (handle_entity == nullptr) return false;
+  // IClientUnknown::GetBaseEntity() is at vfunc index 8.
+  // For CStaticProp (from engine.so), vfunc[8] returns nullptr; static props should block traces.
+  Entity* entity = mem::call_vfunc<Entity*()>(handle_entity, 8);
+  if (entity == nullptr) return true;
+  if (entity == interface->skip) return false;
   if (entity->get_class_id() == class_id::RESPAWN_ROOM_VISUALIZER) return false;  
-  return entity != interface->skip;
+  return true;
 }
 
 enum trace_type_t get_type(struct trace_filter* interface) {

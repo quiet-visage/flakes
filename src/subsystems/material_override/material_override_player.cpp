@@ -9,9 +9,10 @@
 
 #include "sdk/classes/player.hpp"
 
-void override_player_material(Player* player, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
+void apply_player_material_override(Player* player, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
 
   Player* localplayer = entity_list->get_localplayer();
+  if (localplayer == nullptr || player == nullptr) DME_RETURN;
   
   if (player == localplayer && config.materials.player.local == false) DME_RETURN; // Ignore Local Player
   if (player->is_dormant()) DME_RETURN;
@@ -42,44 +43,44 @@ void override_player_material(Player* player, void* me, void* state, ModelRender
     color_z = config.materials.player.enemy_color_z;
     ignore_z = config.materials.player.enemy_flags.ignore_z;
     wireframe = config.materials.player.enemy_flags.wireframe;
-    material = materials.at((int)config.materials.player.enemy_material_type);
-    material_z = materials.at((int)config.materials.player.enemy_material_z_type);
+    material = get_configured_material((int)config.materials.player.enemy_material_type);
+    material_z = get_configured_material((int)config.materials.player.enemy_material_z_type);
 
     color_overlay = config.materials.player.enemy_overlay_color;
     color_z_overlay = config.materials.player.enemy_overlay_color_z;    
     ignore_z_overlay = config.materials.player.enemy_overlay_flags.ignore_z;    
     wireframe_overlay = config.materials.player.enemy_overlay_flags.wireframe;    
-    material_overlay = materials.at((int)config.materials.player.enemy_overlay_material_type);
-    material_z_overlay = materials.at((int)config.materials.player.enemy_overlay_material_z_type);
+    material_overlay = get_configured_material((int)config.materials.player.enemy_overlay_material_type);
+    material_z_overlay = get_configured_material((int)config.materials.player.enemy_overlay_material_z_type);
   }
   if (player->get_team() == localplayer->get_team()) {
     color = config.materials.player.team_color;
     color_z = config.materials.player.team_color_z;
     ignore_z = config.materials.player.team_flags.ignore_z;
     wireframe = config.materials.player.team_flags.wireframe;
-    material = materials.at((int)config.materials.player.team_material_type);
-    material_z = materials.at((int)config.materials.player.team_material_z_type);
+    material = get_configured_material((int)config.materials.player.team_material_type);
+    material_z = get_configured_material((int)config.materials.player.team_material_z_type);
   }
-  if (player->is_friend()) {
+  if (player->is_friend() && config.materials.player.friends) {
     color = config.materials.player.friend_color;
     color_z = config.materials.player.friend_color_z;
     ignore_z = config.materials.player.friends_flags.ignore_z;
     wireframe = config.materials.player.friends_flags.wireframe;
-    material = materials.at((int)config.materials.player.friend_material_type);
-    material_z = materials.at((int)config.materials.player.friend_material_z_type);
+    material = get_configured_material((int)config.materials.player.friend_material_type);
+    material_z = get_configured_material((int)config.materials.player.friend_material_z_type);
   }
   if (player == localplayer) {
     color = config.materials.player.local_color;
     color_z = RGBA_float{};
     ignore_z = false;
     wireframe = config.materials.player.local_flags.wireframe;
-    material = materials.at((int)config.materials.player.local_material_type);
+    material = get_configured_material((int)config.materials.player.local_material_type);
     material_z = material;
   }
 
 
   /* Primary Shader Pass */
-  if (ignore_z == true && material_z != nullptr) {
+  if (ignore_z == true && material_z != nullptr && render_context != nullptr) {
     render_context->set_stencil_enable(true);
 
     render_context->clear_buffers(false, false, false);
@@ -102,7 +103,7 @@ void override_player_material(Player* player, void* me, void* state, ModelRender
     draw_model_execute_original(me, state, pinfo, bone_to_world);
   }
   
-  if (ignore_z == true && material_z != nullptr) {
+  if (ignore_z == true && material_z != nullptr && render_context != nullptr) {
     render_context->clear_buffers(false, false, false);
     render_context->set_stencil_compare_mode(STENCILCOMPARISONFUNCTION_EQUAL);
     render_context->set_stencil_pass_mode(STENCILOPERATION_KEEP);
@@ -121,7 +122,7 @@ void override_player_material(Player* player, void* me, void* state, ModelRender
   }
 
   /* Secondary Overlay Pass */
-  if (ignore_z_overlay == true && material_z_overlay != nullptr) {
+  if (ignore_z_overlay == true && material_z_overlay != nullptr && render_context != nullptr) {
     render_context->set_stencil_enable(true);
 
     render_context->clear_buffers(false, false, false);
@@ -139,7 +140,7 @@ void override_player_material(Player* player, void* me, void* state, ModelRender
     draw_model_execute_original(me, state, pinfo, bone_to_world); 
   }
 
-  if (ignore_z_overlay == true && material_z_overlay != nullptr) {
+  if (ignore_z_overlay == true && material_z_overlay != nullptr && render_context != nullptr) {
     render_context->clear_buffers(false, false, false);
     render_context->set_stencil_compare_mode(STENCILCOMPARISONFUNCTION_EQUAL);
     render_context->set_stencil_pass_mode(STENCILOPERATION_KEEP);

@@ -25,7 +25,18 @@ inline static std::vector<Material*> materials;
 static Material* create_material_ex(const std::string_view name, const std::string_view shader, const std::string_view material) {
   KeyValues* values = new KeyValues(shader.data());
   values->load_from_buffer(name.data(), material.data());
-  return material_system->create_material(name.data(), values);
+  Material* mat = material_system->create_material(name.data(), values);
+  if (mat != nullptr) {
+    mat->increment_reference_count();
+  }
+  return mat;
+}
+
+static Material* get_configured_material(int index) {
+  if (index < 0 || (size_t)index >= materials.size()) {
+    return nullptr;
+  }
+  return materials[(size_t)index];
 }
 
 static void initialize_materials(void) {

@@ -15,7 +15,7 @@
 #include "sdk/classes/keyvalues.hpp"
 #include "sdk/classes/player.hpp"
 
-void run_material_override(Entity* entity, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
+void apply_material_override(Entity* entity, void* me, void* state, ModelRenderInfo* pinfo, VMatrix* bone_to_world) {
   if (config.materials.master == false) DME_RETURN;
 
   Player* localplayer = entity_list->get_localplayer();
@@ -39,9 +39,9 @@ void run_material_override(Entity* entity, void* me, void* state, ModelRenderInf
     
   class_id id = entity->get_class_id();
   if (id == class_id::PLAYER) {
-    override_player_material((Player*)entity, me, state, pinfo, bone_to_world);
-  } else if (entity->is_wearable() || (entity->is_base_combat_weapon() && entity->get_owner_entity() != nullptr && !entity->get_pickup_type())) {
-    override_wearable_material(entity, me, state, pinfo, bone_to_world); // Attachments on the player model like weapons and cosmetics
+    apply_player_material_override((Player*)entity, me, state, pinfo, bone_to_world);
+  } else if ((entity->is_wearable() || (entity->is_base_combat_weapon() && !entity->get_pickup_type())) && entity->get_owner_entity() != nullptr) {
+    apply_wearable_material_override(entity, me, state, pinfo, bone_to_world); // Attachments on the player model like weapons and cosmetics
   } else {
     draw_model_execute_original(me, state, pinfo, bone_to_world);
   }

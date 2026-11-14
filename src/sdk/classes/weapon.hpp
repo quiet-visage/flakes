@@ -747,7 +747,7 @@ public:
   }
 
   int get_type_id(void) {
-    return mem::call_vfunc<int()>(this, 449);
+    return mem::call_vfunc<int()>(this, 451);
   }
 
   bool is_melee(void) {
