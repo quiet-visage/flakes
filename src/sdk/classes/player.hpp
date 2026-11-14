@@ -59,13 +59,15 @@ struct player_info {
   char name[32];
   int user_id;
   char guid[33];
-  unsigned long friends_id;
+  uint32_t friends_id;
   char friends_name[32];
   bool fakeplayer;
   bool ishltv;
-  unsigned long custom_files[4];
+  uint32_t custom_files[4];
   unsigned char files_downloaded;
 };
+
+static_assert(sizeof(player_info) == 0x84, "player_info must be 132 (0x84) bytes on 64-bit Linux");
 
 enum tf_cond {
   TF_COND_INVALID                          = -1,

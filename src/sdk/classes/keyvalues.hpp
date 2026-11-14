@@ -1,7 +1,11 @@
 #ifndef KEYVALUES_HPP
 #define KEYVALUES_HPP
 
+#include <cstddef>
+#include <dlfcn.h>
 #include <string.h>
+
+#include "core/memory.hpp"
 
 enum types_t {
   TYPE_NONE = 0,
@@ -20,6 +24,21 @@ static KeyValues* (*key_values_constructor_original)(void*, const char*);
 static void (*key_values_set_int_original)(void*, const char*, int);
 static bool (*key_values_load_from_buffer_original)(void*, const char*, const char*, void*, const char*);
 
+inline void* get_key_values_system() {
+  static void* (*fn)() = nullptr;
+  if (fn == nullptr) {
+    void* handle = dlopen("./bin/linux64/libvstdlib.so", RTLD_NOLOAD | RTLD_NOW);
+    if (handle != nullptr) {
+      fn = reinterpret_cast<void* (*)()>(dlsym(handle, "KeyValuesSystem"));
+      dlclose(handle);
+    }
+    if (fn == nullptr) {
+      fn = reinterpret_cast<void* (*)()>(dlsym(RTLD_DEFAULT, "KeyValuesSystem"));
+    }
+  }
+  return fn ? fn() : nullptr;
+}
+
 void key_values_set_int_hook(void* me, const char* key, int value) {
 
   /*
@@ -32,6 +51,24 @@ void key_values_set_int_hook(void* me, const char* key, int value) {
 
 class KeyValues {
 public:
+  void* operator new(std::size_t size) {
+    void* kvs = get_key_values_system();
+    if (kvs != nullptr) {
+      return mem::call_vfunc<void*(int)>(kvs, 1, static_cast<int>(size));
+    }
+    return ::operator new(size);
+  }
+
+  void operator delete(void* mem) {
+    if (mem == nullptr) return;
+    void* kvs = get_key_values_system();
+    if (kvs != nullptr) {
+      mem::call_vfunc<void(void*)>(kvs, 2, mem);
+      return;
+    }
+    ::operator delete(mem);
+  }
+
   KeyValues(const char* name) {
     key_values_constructor_original(this, name);
   }
@@ -69,6 +106,9 @@ private:
   KeyValues* m_pPeer;
   KeyValues* m_pSub;
   KeyValues* m_pChain;
+  void* m_pExpressionGetSymbolProc;
 };
+
+static_assert(sizeof(KeyValues) == 0x48, "KeyValues must be 72 (0x48) bytes on 64-bit Linux");
 
 #endif
