@@ -56,9 +56,16 @@ obj/main.cpp.o: main.cpp print.hpp assert.hpp vec.hpp memory.hpp \
  hooks/../gui/../hacks/tickbase/../../imgui/dearimgui.hpp \
  hooks/../gui/../hacks/tickbase/../../gui/config.hpp \
  hooks/../gui/../hacks/tickbase/../../gui/menu.hpp \
- hooks/../gui/../hacks/tickbase/../../hooks/cl_move.hpp hooks/vulkan.cpp \
- hooks/../imgui/imgui_impl_vulkan.h hooks/../interfaces/engine.hpp \
- hooks/../hacks/esp/esp.cpp hooks/../hacks/esp/../../entity_cache.hpp \
+ hooks/../gui/../hacks/tickbase/../../hooks/cl_move.hpp \
+ hooks/../gui/../hacks/spectator_list/spectator_list.hpp \
+ hooks/../gui/../hacks/spectator_list/../../gui/config.hpp \
+ hooks/../gui/../hacks/spectator_list/../../interfaces/engine.hpp \
+ hooks/../gui/../hacks/spectator_list/../../interfaces/entity_list.hpp \
+ hooks/../gui/../hacks/spectator_list/../../interfaces/global_vars.hpp \
+ hooks/../gui/../hacks/spectator_list/../../classes/player.hpp \
+ hooks/vulkan.cpp hooks/../imgui/imgui_impl_vulkan.h \
+ hooks/../interfaces/engine.hpp hooks/../hacks/esp/esp.cpp \
+ hooks/../hacks/esp/../../entity_cache.hpp \
  hooks/../hacks/esp/../../gui/config.hpp \
  hooks/../hacks/esp/../../interfaces/debug_overlay.hpp \
  hooks/../hacks/esp/../../classes/player.hpp hooks/hooks.cpp \
@@ -69,6 +76,7 @@ obj/main.cpp.o: main.cpp print.hpp assert.hpp vec.hpp memory.hpp \
  hooks/../gui/config.hpp hooks/../hacks/aimbot/aimbot.cpp \
  hooks/../hacks/aimbot/aimbot.hpp \
  hooks/../hacks/aimbot/../../classes/player.hpp \
+ hooks/../hacks/aimbot/../spectator_list/spectator_list.hpp \
  hooks/../hacks/aimbot/../../math.hpp \
  hooks/../hacks/aimbot/../../interfaces/client.hpp \
  hooks/../hacks/aimbot/../../interfaces/entity_list.hpp \
@@ -270,6 +278,12 @@ hooks/../gui/../hacks/tickbase/../../imgui/dearimgui.hpp:
 hooks/../gui/../hacks/tickbase/../../gui/config.hpp:
 hooks/../gui/../hacks/tickbase/../../gui/menu.hpp:
 hooks/../gui/../hacks/tickbase/../../hooks/cl_move.hpp:
+hooks/../gui/../hacks/spectator_list/spectator_list.hpp:
+hooks/../gui/../hacks/spectator_list/../../gui/config.hpp:
+hooks/../gui/../hacks/spectator_list/../../interfaces/engine.hpp:
+hooks/../gui/../hacks/spectator_list/../../interfaces/entity_list.hpp:
+hooks/../gui/../hacks/spectator_list/../../interfaces/global_vars.hpp:
+hooks/../gui/../hacks/spectator_list/../../classes/player.hpp:
 hooks/vulkan.cpp:
 hooks/../imgui/imgui_impl_vulkan.h:
 hooks/../interfaces/engine.hpp:
@@ -289,6 +303,7 @@ hooks/../gui/config.hpp:
 hooks/../hacks/aimbot/aimbot.cpp:
 hooks/../hacks/aimbot/aimbot.hpp:
 hooks/../hacks/aimbot/../../classes/player.hpp:
+hooks/../hacks/aimbot/../spectator_list/spectator_list.hpp:
 hooks/../hacks/aimbot/../../math.hpp:
 hooks/../hacks/aimbot/../../interfaces/client.hpp:
 hooks/../hacks/aimbot/../../interfaces/entity_list.hpp:

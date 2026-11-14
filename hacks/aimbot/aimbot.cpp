@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "aimbot.hpp"
+#include "../spectator_list/spectator_list.hpp"
 
 #include "../../math.hpp"
 
@@ -41,7 +42,7 @@ bool is_player_visible(Player* localplayer, Player* entity, int bone) {
 }
 
 void aimbot(user_cmd* user_cmd, Vec3 original_view_angles) {  
-  if (config.aimbot.master == false) {
+  if (config.aimbot.master == false || (config.aimbot.ignore_spectated == true && spectated_1st == true)) {
     target_player = nullptr;
     return;
   }

@@ -222,11 +222,14 @@ static void draw_aim_tab(void) {
   ImGui::NewLine();
   ImGui::SectionHeader("\xEF\x83\x80  Actor Filtering");
   ImGui::Checkbox("Exclude Steam Friends", &config.aimbot.ignore_friends);
+  ImGui::Checkbox("Suppress on 1st-Person Spectate", &config.aimbot.ignore_spectated);
   ImGui::EndChild();
 }
 
 static void draw_esp_tab(void) {
   ImGui::Checkbox("Enable Spatial Telemetry & HUD Projection", &config.esp.master);
+  ImGui::SameLine();
+  ImGui::Checkbox("Spectator List Overlay", &config.esp.spectator_list);
   ImGui::Separator();
   ImGui::Spacing();
 

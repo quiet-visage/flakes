@@ -7,6 +7,7 @@
 #include "../imgui/dearimgui.hpp"
 
 #include "../hacks/tickbase/tickbase.hpp"
+#include "../hacks/spectator_list/spectator_list.hpp"
 
 static void draw_tickbase_indicator(void) {
   if (config.misc.exploits.tickbase_indicator == false || config.misc.exploits.tickbase == false) return;

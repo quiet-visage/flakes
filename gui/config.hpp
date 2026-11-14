@@ -40,6 +40,7 @@ struct Aim {
   bool scoped_only = false;
   
   bool ignore_friends = true;
+  bool ignore_spectated = true;
 };
 
 struct Airblast {
@@ -63,6 +64,7 @@ struct Airblast {
 
 struct Esp {
   bool master = false;
+  bool spectator_list = false;
 
   struct Player {
     RGBA_float enemy_color = {.r = 1, .g = 0.501960784, .b = 0, .a = 1};

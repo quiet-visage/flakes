@@ -44,6 +44,17 @@ enum class tf_class {
   ENGINEER
 };
 
+enum observer_mode_t {
+  OBS_MODE_NONE = 0,
+  OBS_MODE_DEATHCAM,
+  OBS_MODE_FREEZECAM,
+  OBS_MODE_FIXED,
+  OBS_MODE_IN_EYE,
+  OBS_MODE_CHASE,
+  OBS_MODE_POI,
+  OBS_MODE_ROAMING,
+};
+
 struct player_info {
   char name[32];
   int user_id;
@@ -375,6 +386,18 @@ public:
 
   Entity* get_ground_entity(void) {
     return entity_list->entity_from_handle(this->get_ground_entity_handle());
+  }
+
+  observer_mode_t get_observer_mode(void) {
+    return (observer_mode_t)mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_iObserverMode", 0x1654));
+  }
+
+  int get_observer_target_handle(void) {
+    return mem::read<int>(this, NETVAR_OFFSET("DT_BasePlayer", "m_hObserverTarget", 0x1658));
+  }
+
+  Entity* get_observer_target(void) {
+    return entity_list->entity_from_handle(this->get_observer_target_handle());
   }
 
   int get_flags(void) {

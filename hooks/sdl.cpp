@@ -118,6 +118,7 @@ void swap_window_hook(SDL_Window* window) {
   ImGui::NewFrame();
 
   draw_tickbase_indicator();
+  draw_spectator_list();
 
   if (menu_focused == true) {
     draw_menu();

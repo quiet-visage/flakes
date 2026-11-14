@@ -314,6 +314,7 @@ VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* present_info)
     draw_players_imgui();
 
     draw_tickbase_indicator();
+    draw_spectator_list();
     
     if (menu_focused == true) {
       draw_menu();
