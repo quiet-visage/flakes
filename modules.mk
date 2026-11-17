@@ -388,7 +388,7 @@ obj/src_subsystems_tick_scheduler_tick_scheduler.hpp.o: src/subsystems/tick_sche
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
 
-obj/src_subsystems_vector_targeting_vector_targeting.cpp.o: src/subsystems/vector_targeting/vector_targeting.cpp obj/src_core_entity_cache.hpp.o obj/src_core_math.hpp.o obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/src_sdk_classes_player.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_engine.hpp.o obj/src_sdk_interfaces_engine_trace.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/std.compat.o obj/src_subsystems_observer_telemetry_observer_telemetry.hpp.o obj/src_subsystems_vector_targeting_vector_targeting.hpp.o
+obj/src_subsystems_vector_targeting_vector_targeting.cpp.o: src/subsystems/vector_targeting/vector_targeting.cpp obj/src_core_entity_cache.hpp.o obj/src_core_math.hpp.o obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/src_sdk_classes_player.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_engine.hpp.o obj/src_sdk_interfaces_engine_trace.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/src_sdk_interfaces_global_vars.hpp.o obj/std.compat.o obj/src_subsystems_observer_telemetry_observer_telemetry.hpp.o obj/src_subsystems_vector_targeting_vector_targeting.hpp.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS)  -c $< -o $@
 

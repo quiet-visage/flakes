@@ -59,7 +59,8 @@ Flakes operates as an internal instrumentation module loaded into the target pro
 | Subsystem | Directory | Technical Description |
 | :--- | :--- | :--- |
 | **Spatial Telemetry & HUD Diagnostics** | `src/subsystems/spatial_telemetry/`, `src/gui/` | Projects 3D world-space entity bounding volumes (`IVDebugOverlay`), skeletal kinematics, status flags, and resource states onto a 2D viewport via `VGUI_Surface030` and an interactive Dear ImGui control panel rendered over Vulkan/SDL2. |
-| **Autonomous Kinematics & Vector Targeting** | `src/subsystems/vector_targeting/` | Computes ballistic trajectories, hitscan ray-intersection checks (`IEngineTrace`), and angular orientation vectors within `IClientMode::CreateMove` user-command ticks. |
+| **Autonomous Kinematics & Vector Targeting** | `src/subsystems/vector_targeting/` | Computes ballistic trajectories, hitscan ray-intersection checks (`IEngineTrace`), and angular orientation vectors within `IClientMode::CreateMove` user-command ticks. Visible (non-silent) mode implements anthropomorphic neuromuscular control: second-order damped harmonic oscillation, Flash & Hogan (1985) minimum-jerk trajectory planning with dynamic re-planning, Harris & Wolpert (1998) signal-dependent noise via Ornstein-Uhlenbeck processes, constant-acceleration 3D Kalman filtering with latency lead compensation, and Casiez et al. (2012) One-Euro adaptive low-pass smoothing. See detailed research documentation in [docs/biomechanical_vector_targeting.md](docs/biomechanical_vector_targeting.md). |
+| **Demoman Stickybomb Proximity Fuze** | `src/subsystems/proximity_fuze/` | Evaluates player and building proximity to local Demoman stickies (`tf_projectile_pipe`), checks line-of-sight raycasts, and auto-detonates via `IN_ATTACK2` with Scottish Resistance view-angle snapping. |
 | **Active Deflection Routine** | `src/subsystems/active_deflection/` | Evaluates incoming projectile trajectories and triggers compressed-air deflection commands within bounding-sphere thresholds. |
 | **Autonomous Graph Navigation (`Navmesh`)** | `src/subsystems/graph_navigation/` | Parses Source Engine `.nav` navigation meshes and integrates the `MicroPather` A* solver to autonomously compute and traverse waypoint graphs across map objectives. |
 | **Deterministic Client-Side Prediction** | `src/subsystems/state_prediction/` | Reconstructs client-side movement state (`IPrediction`, `IGameMovement`, `IMoveHelper`) prior to server command dispatch to compensate for network latency and tick quantization. |
@@ -74,6 +75,8 @@ Flakes operates as an internal instrumentation module loaded into the target pro
 
 ```text
 .
+├── docs/                    # Mathematical specifications & biomechanical research papers
+│   └── biomechanical_vector_targeting.md # Biomechanical motor control, kinematics & filtering theory
 ├── src/
 │   ├── main.cpp             # Unity build entry point (__attribute__((constructor)) / destructor)
 │   ├── core/                # Foundational primitives (memory, math, vec, entity_cache, lookup, offsets, print)
@@ -90,7 +93,6 @@ Flakes operates as an internal instrumentation module loaded into the target pro
 │   ├── md5/                 # Source Engine MD5 pseudo-random number generator
 │   └── micropather/         # A* graph solver used by graph_navigation
 ├── scripts/
-│   ├── build.sh             # Standalone bootstrap script (builds funchook + tf2.so)
 │   ├── inject.sh            # GDB-based dlopen/dlclose runtime loader and log follower
 │   ├── debug.sh             # Interactive GDB attachment helper for crash diagnostics
 │   └── packages/            # Distribution-aware dependency installation scripts
@@ -115,16 +117,13 @@ Run the distribution detection script (supports Arch, Debian/Ubuntu, Fedora, Gen
 
 ## Building & Runtime Deployment
 
-### Option 1: Standard Build & Load Scripts
+### Option 1: Standard Build & Load
 
-1. **Bootstrap & Compile** (clones/builds `funchook` into `vendor/funchook` on first run, compiles `tf2.so`, and clears the ELF executable stack flag):
-   ```bash
-   ./scripts/build.sh
-   ```
-   For subsequent incremental builds, you can invoke GNU Make directly:
+1. **Compile & Link** (automatically builds `funchook` if needed, compiles C++23 modules and vendor objects, and clears the ELF executable stack flag):
    ```bash
    make -j$(nproc)
    ```
+   *(Note: `scripts/build.sh` is deprecated and forwards directly to `make`.)*
 
 2. **Load into Target Process** (requires `tf_linux64` running):
    ```bash

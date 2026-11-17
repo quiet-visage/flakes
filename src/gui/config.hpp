@@ -40,6 +40,38 @@ struct VectorTargetingConfig {
   
   bool ignore_friends = true;
   bool ignore_spectated = true;
+
+  // Biomechanical Kinematics & Motor Control (Non-silent vector targeting)
+  enum class BiomechanicalModel {
+    SPRING_DAMPER,
+    MINIMUM_JERK,
+    HYBRID
+  } bio_model = BiomechanicalModel::SPRING_DAMPER;
+
+  // 1. Second-Order Damped Harmonic Oscillator
+  float spring_omega_n = 18.0f;  // Natural Frequency omega_n (rad/s)
+  float spring_zeta = 0.85f;     // Damping Ratio zeta (<1 underdamped, =1 critical, >1 overdamped)
+
+  // 2. Minimum-Jerk Trajectory Planning (Flash & Hogan 1985)
+  float jerk_duration = 0.22f;       // Movement duration T (seconds)
+  float jerk_replan_accel = 120.0f;  // Dynamic replanning target acceleration threshold (deg/s^2)
+
+  // 3. Signal-Dependent Noise & Fitts's Law (Harris & Wolpert 1998) + Ornstein-Uhlenbeck
+  bool ou_noise_enabled = true;
+  float ou_theta = 12.0f;        // Mean-reversion rate theta_ou (1/s)
+  float ou_sigma = 1.2f;         // Neuromuscular noise volatility sigma
+  float ou_scale = 0.02f;        // Signal-dependent noise gain (variance scales with |theta_dot|)
+
+  // 4. Kalman Filter for Target Prediction & Lead
+  bool kalman_enabled = true;
+  float kalman_latency = 0.18f;  // Latency compensation delay tau_delay (seconds)
+  float kalman_q = 60.0f;        // Process noise Q
+  float kalman_r = 1.5f;         // Measurement noise R
+
+  // 5. One-Euro Filter (Adaptive Low-Pass Smoothing)
+  bool one_euro_enabled = true;
+  float one_euro_min_cutoff = 1.0f; // f_{c,min} (Hz)
+  float one_euro_beta = 0.05f;       // Speed coefficient beta
 };
 
 struct ActiveDeflectionConfig {

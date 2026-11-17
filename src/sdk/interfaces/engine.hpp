@@ -45,6 +45,14 @@ public:
   void client_cmd_unrestricted(const char* cmd) {
     mem::call_vfunc<void(const char*)>(this, 106, cmd);
   }
+
+  void get_view_angles(Vec3& va) {
+    mem::call_vfunc<void(Vec3&)>(this, 19, va);
+  }
+
+  void set_view_angles(Vec3& va) {
+    mem::call_vfunc<void(Vec3&)>(this, 20, va);
+  }
 };
 
 inline Engine* engine;

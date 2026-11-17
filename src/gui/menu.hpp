@@ -175,13 +175,129 @@ inline void draw_kinematics_tab(void) {
   ImGui::TextUnformatted("Trigger Gate Key:");
   ImGui::SameLine();
   ImGui::KeybindBox(&config.targeting.key.waiting, &config.targeting.key.button, "TargetingKey");
+
+  ImGui::Spacing();
+  ImGui::Separator();
+  ImGui::Spacing();
+
+  ImGui::SectionHeader("\xEF\x86\x92  Optics State Machine");
+  ImGui::Checkbox("Auto-Transition Scope", &config.targeting.auto_scope);
+  ImGui::Checkbox("Auto-Unscope Post-Discharge", &config.targeting.auto_unscope);
+  ImGui::Checkbox("Require Scoped State", &config.targeting.scoped_only);
+
+  ImGui::Spacing();
+  ImGui::Separator();
+  ImGui::Spacing();
+
+  ImGui::SectionHeader("\xEF\x83\x80  Actor Filtering");
+  ImGui::Checkbox("Exclude Steam Friends##Targeting", &config.targeting.ignore_friends);
+  ImGui::Checkbox("Suppress on 1st-Person Observation", &config.targeting.ignore_spectated);
+
+  ImGui::Spacing();
+  ImGui::Separator();
+  ImGui::Spacing();
+
+  ImGui::SectionHeader("\xEF\x86\xB2  Biomechanical Kinematics & Filtering");
+  if (config.targeting.silent) {
+    ImGui::TextDisabled("Silent angular projection is active (bypasses motor modeling).");
+  } else {
+    ImGui::TextUnformatted("Aim Actuation Kinematics Model");
+    const char* model_items[] = { "Second-Order Spring-Damper", "Minimum-Jerk Trajectory", "Hybrid (Min-Jerk + Damper)" };
+    ImGui::SetNextItemWidth(-1);
+    ImGui::Combo("##BioModel", (int*)&config.targeting.bio_model, model_items, IM_ARRAYSIZE(model_items));
+
+    if (config.targeting.bio_model == VectorTargetingConfig::BiomechanicalModel::SPRING_DAMPER ||
+        config.targeting.bio_model == VectorTargetingConfig::BiomechanicalModel::HYBRID) {
+      ImGui::Spacing();
+      ImGui::TextUnformatted("Harmonic Natural Frequency (\xCF\x89" "n)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##SpringOmegaN", &config.targeting.spring_omega_n, 1.0f, 50.0f, "%.1f rad/s");
+
+      ImGui::TextUnformatted("Oscillator Damping Ratio (\xCE\xB6)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##SpringZeta", &config.targeting.spring_zeta, 0.1f, 2.5f, "%.2f");
+      if (config.targeting.spring_zeta < 1.0f) {
+        ImGui::TextDisabled("  Underdamped: High-speed flick overshoot");
+      } else if (config.targeting.spring_zeta == 1.0f) {
+        ImGui::TextDisabled("  Critically Damped: Fastest non-overshoot");
+      } else {
+        ImGui::TextDisabled("  Overdamped: Sluggish asymptotic approach");
+      }
+    }
+
+    if (config.targeting.bio_model == VectorTargetingConfig::BiomechanicalModel::MINIMUM_JERK ||
+        config.targeting.bio_model == VectorTargetingConfig::BiomechanicalModel::HYBRID) {
+      ImGui::Spacing();
+      ImGui::TextUnformatted("Minimum-Jerk Duration (T)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##JerkDuration", &config.targeting.jerk_duration, 0.05f, 1.0f, "%.2f s");
+
+      ImGui::TextUnformatted("Dynamic Re-plan Accel Threshold");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##JerkReplanAccel", &config.targeting.jerk_replan_accel, 10.0f, 500.0f, "%.0f deg/s\xC2\xB2");
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::Checkbox("Signal-Dependent Noise & Fitts Tremor", &config.targeting.ou_noise_enabled);
+    if (config.targeting.ou_noise_enabled) {
+      ImGui::TextUnformatted("OU Mean-Reversion Rate (\xCE\xB8" "ou)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##OUTheta", &config.targeting.ou_theta, 1.0f, 30.0f, "%.1f /s");
+
+      ImGui::TextUnformatted("OU Volatility (\xCF\x83)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##OUSigma", &config.targeting.ou_sigma, 0.0f, 5.0f, "%.2f");
+
+      ImGui::TextUnformatted("Signal-Dependent Noise Scale");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##OUScale", &config.targeting.ou_scale, 0.001f, 0.1f, "%.3f");
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::Checkbox("Kalman Target Prediction & Lead", &config.targeting.kalman_enabled);
+    if (config.targeting.kalman_enabled) {
+      ImGui::TextUnformatted("Latency Compensation Delay (\xCF\x84" "delay)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##KalmanLatency", &config.targeting.kalman_latency, 0.0f, 0.35f, "%.3f s");
+
+      ImGui::TextUnformatted("Process Noise (Q)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##KalmanQ", &config.targeting.kalman_q, 1.0f, 500.0f, "%.1f");
+
+      ImGui::TextUnformatted("Measurement Noise (R)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##KalmanR", &config.targeting.kalman_r, 0.1f, 20.0f, "%.1f");
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::Checkbox("One-Euro Adaptive Smoothing Filter", &config.targeting.one_euro_enabled);
+    if (config.targeting.one_euro_enabled) {
+      ImGui::TextUnformatted("Minimum Cutoff Frequency (fc,min)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##OneEuroMinCutoff", &config.targeting.one_euro_min_cutoff, 0.1f, 10.0f, "%.1f Hz");
+
+      ImGui::TextUnformatted("Speed Coefficient Slope (\xCE\xB2)");
+      ImGui::SetNextItemWidth(-1);
+      ImGui::SliderFloat("##OneEuroBeta", &config.targeting.one_euro_beta, 0.001f, 0.5f, "%.3f");
+    }
+  }
   ImGui::EndChild();
 
   ImGui::SameLine();
 
-  ImGui::BeginChild("##KinematicsDeflectionAndFilterCard", ImVec2(0, 0), ImGuiChildFlags_Borders);
+  // Column 2: Active Deflection
+  ImGui::BeginChild("##KinematicsDeflectionCard", ImVec2(col_width, 0), ImGuiChildFlags_Borders);
   ImGui::SectionHeader("\xEF\x81\xAD  Directional Active Deflection");
-  ImGui::Checkbox("Enable Active Deflection (Pyro Only)", &config.deflection.master);
+  ImGui::Checkbox("Enable Active Deflection (Pyro)", &config.deflection.master);
   ImGui::Checkbox("Require Manual Trigger Gate##Deflection", &config.deflection.use_key);
   ImGui::TextUnformatted("Trigger Gate Key:");
   ImGui::SameLine();
