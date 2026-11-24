@@ -101,12 +101,12 @@ private:
   char m_iDataType;
   char m_bHasEscapeSequences;
   char m_bEvaluateConditionals;
-  char unused[1];
+  char m_flags; // +0x23: bit 0 = use system ptr at +0x40 for name lookups
 
   KeyValues* m_pPeer;
   KeyValues* m_pSub;
   KeyValues* m_pChain;
-  void* m_pExpressionGetSymbolProc;
+  void* m_pKeyValuesSystem; // +0x40: KeyValues system pointer
 };
 
 static_assert(sizeof(KeyValues) == 0x48, "KeyValues must be 72 (0x48) bytes on 64-bit Linux");

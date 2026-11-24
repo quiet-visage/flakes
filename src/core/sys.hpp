@@ -32,6 +32,7 @@ module;
 #undef RTLD_DEFAULT
 #undef PROT_READ
 #undef PROT_WRITE
+#undef PROT_EXEC
 #undef _SC_PAGESIZE
 #undef SIGFPE
 #undef SIGKILL
@@ -76,6 +77,7 @@ export extern "C++" {
 
   inline constexpr int PROT_READ = 0x1;
   inline constexpr int PROT_WRITE = 0x2;
+  inline constexpr int PROT_EXEC = 0x4;
 
   inline constexpr int SIGFPE = 8;
   inline constexpr int SIGKILL = 9;
@@ -237,12 +239,14 @@ export extern "C++" {
   using ::VK_FORMAT_B8G8R8A8_UNORM;
   using ::VK_SAMPLE_COUNT_1_BIT;
   using ::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  using ::VK_ATTACHMENT_LOAD_OP_LOAD;
   using ::VK_ATTACHMENT_STORE_OP_STORE;
   using ::VK_ATTACHMENT_STORE_OP_DONT_CARE;
   using ::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
   using ::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
   using ::VK_PIPELINE_BIND_POINT_GRAPHICS;
   using ::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+  using ::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   using ::VK_SUBPASS_CONTENTS_INLINE;
   using ::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
   using ::VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -375,6 +379,8 @@ export extern "C++" {
   using ::ImGuiColorEditFlags_NoInputs;
   using ::ImGuiColorEditFlags_NoTooltip;
   using ::ImGuiCond_Always;
+  using ::ImGuiCond_FirstUseEver;
+  using ::ImGuiConfigFlags_NoMouseCursorChange;
   using ::ImGuiInputTextFlags_Password;
   using ::ImGuiKey_End;
   using ::ImGuiKey_F11;

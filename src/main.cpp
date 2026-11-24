@@ -105,21 +105,34 @@ void entry() {
   error_assert(surface == nullptr, "VGUI_Surface030 is missing");
   
   unsigned long func_address = (unsigned long)sigscan_module("client.so", "48 8D 05 ? ? ? ? 48 8B 38 48 8B 07 FF 90 ? ? ? ? 48 8D 15 ? ? ? ? 84 C0");
-  unsigned int input_eaddr = *(unsigned int*)(func_address + 0x3);
+  error_assert(func_address == 0, "Failed to find CInput signature");
+  int32_t input_eaddr = *(int32_t*)(func_address + 0x3);
   unsigned long next_instruction = (unsigned long)(func_address + 0x7);
-  input = (Input*)(*(void**)(next_instruction + input_eaddr));
+  input = (Input*)(*(void**)(next_instruction + (intptr_t)input_eaddr));
   error_assert(input == nullptr, "CInput is missing");
 
   unsigned long check_stuck_address = (unsigned long)sigscan_module("client.so", "48 8D 05 ? ? ? ? 48 89 85 ? ? ? ? 74 ? 48 8B 38");
-  unsigned int move_helper_eaddr = *(unsigned int*)(check_stuck_address + 0x3);
+  error_assert(check_stuck_address == 0, "Failed to find CMoveHelper signature");
+  int32_t move_helper_eaddr = *(int32_t*)(check_stuck_address + 0x3);
   unsigned long check_stuck_next_instruction = (unsigned long)(check_stuck_address + 0x7);
-  move_helper = (MoveHelper*)(*(void**)(check_stuck_next_instruction + move_helper_eaddr));
+  move_helper = (MoveHelper*)(*(void**)(check_stuck_next_instruction + (intptr_t)move_helper_eaddr));
   error_assert(move_helper == nullptr, "CMoveHelper is missing");
   
-  unsigned long rcon_addr_change_address = (unsigned long)sigscan_module("engine.so", "48 8D 05 ? ? ? ? 4C 8B 40");
-  unsigned int client_state_eaddr = *(unsigned int*)(rcon_addr_change_address + 0x3);
-  unsigned long rcon_addr_change_next_instruction = (unsigned long)(rcon_addr_change_address + 0x7);
-  client_state = (ClientState*)((void*)(rcon_addr_change_next_instruction + client_state_eaddr));
+  unsigned long rcon_addr_change_address = (unsigned long)sigscan_module("engine.so", "48 8D 05 ? ? ? ? 48 8B 40 20 48 85 C0");
+  if (rcon_addr_change_address == 0) {
+    rcon_addr_change_address = (unsigned long)sigscan_module("engine.so", "48 8D 05 ? ? ? ? 48 8B 80 F0 8E 00 00");
+  }
+
+  if (rcon_addr_change_address != 0) {
+    int32_t client_state_eaddr = *(int32_t*)(rcon_addr_change_address + 0x3);
+    unsigned long rcon_addr_change_next_instruction = (unsigned long)(rcon_addr_change_address + 0x7);
+    client_state = (ClientState*)((void*)(rcon_addr_change_next_instruction + (intptr_t)client_state_eaddr));
+  } else {
+    void* engine_base = get_module_base_address("engine.so");
+    if (engine_base != nullptr) {
+      client_state = (ClientState*)((uintptr_t)engine_base + 0xa548a0);
+    }
+  }
   error_assert(client_state == nullptr, "CClientState is missing");
   
   prediction = (Prediction*)get_interface("./tf/bin/linux64/client.so", "VClientPrediction001");
@@ -177,16 +190,35 @@ void entry() {
   }
 
   client_vtable = *(void ***)client;
+  error_assert(client_vtable == nullptr, "client_vtable is missing");
   void* hud_process_input_addr = client_vtable[10];
-  uint32_t client_mode_eaddr = *(uint32_t *)((uintptr_t)(hud_process_input_addr) + 0x3);
+  error_assert(hud_process_input_addr == nullptr, "HudProcessInput is missing");
+  int32_t client_mode_eaddr = *(int32_t *)((uintptr_t)(hud_process_input_addr) + 0x3);
   void* client_mode_next_instruction = (void *)((uintptr_t)(hud_process_input_addr) + 0x7);
-  void* client_mode_interface = *(void **)((uintptr_t)(client_mode_next_instruction) + client_mode_eaddr);
+  void* client_mode_interface = *(void **)((uintptr_t)(client_mode_next_instruction) + (intptr_t)client_mode_eaddr);
   error_assert(client_mode_interface == nullptr, "ClientModeShared is missing");
   
   unsigned long hud_update = (unsigned long)client_vtable[11];
-  unsigned int global_vars_eaddr = *(unsigned int *)(hud_update + 0x16);
-  unsigned long global_vars_next_instruction = (unsigned long)(hud_update + 0x1A);
-  global_vars = (GlobalVars*)(*(void **)(global_vars_next_instruction + global_vars_eaddr));
+  error_assert(hud_update == 0, "HudUpdate is missing");
+  // In 64-bit TF2 client.so, HudUpdate accesses gpGlobals via `48 8B 05 [disp32]`
+  // Scan for the instruction within the first 32 bytes of HudUpdate
+  bool found_gp_globals = false;
+  for (unsigned long i = 0; i < 32; ++i) {
+    unsigned char* p = (unsigned char*)(hud_update + i);
+    if (p[0] == 0x48 && p[1] == 0x8B && p[2] == 0x05) {
+      int32_t disp = *(int32_t*)(p + 3);
+      unsigned long next_ip = (unsigned long)(p + 7);
+      global_vars = (GlobalVars*)(*(void**)(next_ip + (intptr_t)disp));
+      found_gp_globals = true;
+      break;
+    }
+  }
+  if (!found_gp_globals || global_vars == nullptr) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base != nullptr) {
+      global_vars = *(GlobalVars**)((uintptr_t)client_base + 0x2eab2e0);
+    }
+  }
   error_assert(global_vars == nullptr, "CGlobalVars is missing");
  
   // VMT Function Hooks
@@ -266,73 +298,127 @@ void entry() {
   
   in_cond_original = (bool (*)(void*, int))sigscan_module("client.so", "55 83 FE ? 48 89 E5 41 54 41 89 F4");
   
-  load_white_list_original = (void* (*)(void*, const char*))sigscan_module("engine.so", "55 48 89 E5 41 55 41 54 49 89 FC 48 83 EC ? 48 8B 07 FF 50");
+  load_white_list_original = (void* (*)(void*, const char*))sigscan_module("engine.so", "55 48 89 E5 41 55 41 54 49 89 F4 53 48 89 FB 48 83 EC ? 48 8B 07 FF 50 30");
+  if (!load_white_list_original) {
+    void* engine_base = get_module_base_address("engine.so");
+    if (engine_base) load_white_list_original = (void* (*)(void*, const char*))((uintptr_t)engine_base + 0x599e50);
+  }
 
-  cl_move_original = (void (*)(float, bool))sigscan_module("engine.so", "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 83 EC ? 83 3D ? ? ? ? ? F3 0F 11 85");
+  cl_move_original = (void (*)(float, bool))sigscan_module("engine.so", "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC ? ? ? ? 83 3D ? ? ? ? ? F3 0F 11 85");
+  if (!cl_move_original) {
+    void* engine_base = get_module_base_address("engine.so");
+    if (engine_base) cl_move_original = (void (*)(float, bool))((uintptr_t)engine_base + 0x3b94d0);
+  }
 
-  should_draw_local_player_original = (bool (*)(void*))sigscan_module("client.so", "55 48 89 E5 41 54 48 83 EC ? 48 8D 05 ? ? ? ? 48 8B 38 48 85 FF 74 ? 48 8B 07 FF 50");
+  should_draw_local_player_original = (bool (*)(void*))sigscan_module("client.so", "55 48 89 E5 53 48 89 FB 48 83 EC 08 48 8D 05 ? ? ? ? 48 8B 38 48 8B 07 FF 90 D0 00 00 00 84 C0 74 ? 48 8B 03 48 89 DF 48 8B 5D F8 48 8B 80 50 0D 00 00");
+  if (!should_draw_local_player_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) should_draw_local_player_original = (bool (*)(void*))((uintptr_t)client_base + 0x15428e0);
+  }
 
   should_draw_this_player_original = (bool (*)(void*))sigscan_module("client.so", "55 48 89 E5 41 54 53 E8 ? ? ? ? 84 C0 75");
+  if (!should_draw_this_player_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) should_draw_this_player_original = (bool (*)(void*))((uintptr_t)client_base + 0x1c5da70);
+  }
 
-  draw_view_models_original = (void (*)(void*, view_setup*, bool))sigscan_module("client.so", "55 31 C0 48 89 E5 41 57 41 56 41 55 41 89 D5 41 54 49 89 FC 53 48 89 F3 48 81 EC");
+  draw_view_models_original = (void (*)(void*, view_setup*, bool))sigscan_module("client.so", "55 48 89 E5 41 57 41 56 41 55 49 89 F5 41 54 49 89 FC 53 89 D3 48 81 EC A8 01 00 00");
+  if (!draw_view_models_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) draw_view_models_original = (void (*)(void*, view_setup*, bool))((uintptr_t)client_base + 0x17117e0);
+  }
 
-  attribute_hook_value_float_original = (float (*)(float, const char*, Entity*, void*, bool))sigscan_module("client.so", "55 31 C0 48 89 E5 41 57 41 56 41 55 49 89 F5 41 54 49 89 FC 53 89 CB");
+  attribute_hook_value_float_original = (float (*)(float, const char*, Entity*, void*, bool))sigscan_module("client.so", "55 48 89 E5 41 57 49 89 FF 41 56 41 55 41 54 53 48 89 F3 48 83 EC 58 4C 8B");
+  if (!attribute_hook_value_float_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) attribute_hook_value_float_original = (float (*)(float, const char*, Entity*, void*, bool))((uintptr_t)client_base + 0x150ba40);
+  }
   error_assert(attribute_hook_value_float_original == nullptr, "Failed to find CAttributeManager::AttribHookValue<float>()");
 
-  intro_menu_on_tick_original = (void (*)(void*))sigscan_module("client.so", "55 48 89 E5 41 55 41 54 49 89 FC 48 8B BF ? ? ? ? 48 8B 07 FF 90 ? ? ? ? 84 C0");
+  intro_menu_on_tick_original = (void (*)(void*))sigscan_module("client.so", "55 48 89 E5 41 54 53 48 89 FB 48 8B BF ? ? ? ? 48 8B 07 FF 90 ? ? ? ? 84 C0");
+  if (!intro_menu_on_tick_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) intro_menu_on_tick_original = (void (*)(void*))((uintptr_t)client_base + 0x1e43520);
+  }
   
-  class_menu_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 89 E5 41 55 41 54 49 89 FC 53 89 F3 40 0F B6 F6 48 83 EC ? E8 ? ? ? ? 84 DB 48 8D 1D");
+  class_menu_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 89 E5 41 55 41 54 41 89 F4 40 0F B6 F6 53 48 89 FB 48 83 EC 48 E8 ? ? ? ? 4C 8D 2D");
+  if (!class_menu_show_panel_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) class_menu_show_panel_original = (void (*)(void*, bool))((uintptr_t)client_base + 0x1e13e30);
+  }
 
-  team_menu_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 89 E5 41 56 41 55 41 54 49 89 FC 53 48 83 EC ? 40 84 F6 0F 85");
+  team_menu_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 89 E5 41 56 41 55 41 54 53 48 89 FB 48 83 EC ? 40 84 F6 0F 85");
+  if (!team_menu_show_panel_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) team_menu_show_panel_original = (void (*)(void*, bool))((uintptr_t)client_base + 0x1e58450);
+  }
 
-  map_info_menu_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 8D 15 ? ? ? ? 48 89 E5 41 54 49 89 FC 53 48 8B 07 89 F3");
+  map_info_menu_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 8D 15 ? ? ? ? 48 89 E5 41 54 41 89 F4 53 48 8B 07 48 89 FB 48 8B 80 18 01 00 00 48 39 D0 75 ? E8 ? ? ? ? 44 38 E0 74 ? 45 84 E4");
+  if (!map_info_menu_show_panel_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) map_info_menu_show_panel_original = (void (*)(void*, bool))((uintptr_t)client_base + 0x1e38e20);
+  }
 
-  text_window_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 8D 15 ? ? ? ? 48 89 E5 41 54 41 89 F4 53 48 8B 07");
+  text_window_show_panel_original = (void (*)(void*, bool))sigscan_module("client.so", "55 48 8D 15 ? ? ? ? 48 89 E5 41 54 41 89 F4 53 48 8B 07 48 89 FB 48 8B 80 18 01 00 00 48 39 D0 75 ? E8 ? ? ? ? 44 38 E0 74 ? 48 8B 03 BA 01 00 00 00 BE 01");
+  if (!text_window_show_panel_original) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) text_window_show_panel_original = (void (*)(void*, bool))((uintptr_t)client_base + 0x1e601c0);
+  }
   
   int rv;
   
-  rv = funchook_prepare(funchook, (void**)&in_cond_original, (void*)in_cond_hook);
-  error_assert(rv != 0, "Failed to prepare InCond hook\n");
+  auto safe_prepare = [](funchook_t* fh, void** target, void* hook, const char* name) {
+    if (*target == nullptr) {
+      print("WARNING: skipping hook for %s (null target)\n", name);
+      return;
+    }
+    int rv = funchook_prepare(fh, target, hook);
+    if (rv != 0) {
+      print("WARNING: funchook_prepare failed for %s (code %d)\n", name, rv);
+    } else {
+      print("Hook prepared for %s\n", name);
+    }
+  };
 
-  rv = funchook_prepare(funchook, (void**)&load_white_list_original, (void*)load_white_list_hook);
-  error_assert(rv != 0, "Failed to prepare LoadWhiteList hook\n");
+  safe_prepare(funchook, (void**)&in_cond_original, (void*)in_cond_hook, "InCond");
+  safe_prepare(funchook, (void**)&load_white_list_original, (void*)load_white_list_hook, "LoadWhiteList");
+  safe_prepare(funchook, (void**)&cl_move_original, (void*)cl_move_hook, "CL_Move");
+  safe_prepare(funchook, (void**)&should_draw_local_player_original, (void*)should_draw_local_player_hook, "ShouldDrawLocalPlayer");
+  safe_prepare(funchook, (void**)&should_draw_this_player_original, (void*)should_draw_this_player_hook, "ShouldDrawThisPlayer");
+  safe_prepare(funchook, (void**)&draw_view_models_original, (void*)draw_view_models_hook, "DrawViewModels");
+  safe_prepare(funchook, (void**)&intro_menu_on_tick_original, (void*)intro_menu_on_tick_hook, "CTFIntroMenu::OnTick");
+  safe_prepare(funchook, (void**)&class_menu_show_panel_original, (void*)class_menu_show_panel_hook, "CTFClassMenu::ShowPanel");
+  safe_prepare(funchook, (void**)&team_menu_show_panel_original, (void*)team_menu_show_panel_hook, "CTFTeamMenu::ShowPanel");
+  safe_prepare(funchook, (void**)&map_info_menu_show_panel_original, (void*)map_info_menu_show_panel_hook, "CTFMapInfoMenu::ShowPanel");
+  safe_prepare(funchook, (void**)&text_window_show_panel_original, (void*)text_window_show_panel_hook, "CTFTextWindow::ShowPanel");
 
-  rv = funchook_prepare(funchook, (void**)&cl_move_original, (void*)cl_move_hook);
-  error_assert(rv != 0, "Failed to prepare CL_Move hook\n");
-
-  rv = funchook_prepare(funchook, (void**)&should_draw_local_player_original, (void*)should_draw_local_player_hook);
-  error_assert(rv != 0, "Failed to prepare ShouldDrawLocalPlayer hook\n");
-
-  rv = funchook_prepare(funchook, (void**)&should_draw_this_player_original, (void*)should_draw_this_player_hook);
-  error_assert(rv != 0, "Failed to prepare ShouldDrawThisPlayer hook\n");
-
-  rv = funchook_prepare(funchook, (void**)&draw_view_models_original, (void*)draw_view_models_hook);
-  error_assert(rv != 0, "Failed to prepare DrawViewModels hook\n");
-
-  rv = funchook_prepare(funchook, (void**)&intro_menu_on_tick_original, (void*)intro_menu_on_tick_hook);
-  error_assert(rv != 0, "Failed to prepare CTFIntroMenu::OnTick hook\n");
-  
-  rv = funchook_prepare(funchook, (void**)&class_menu_show_panel_original, (void*)class_menu_show_panel_hook);
-  error_assert(rv != 0, "Failed to prepare CTFClassMenu::ShowPanel hook\n");
-
-  rv = funchook_prepare(funchook, (void**)&team_menu_show_panel_original, (void*)team_menu_show_panel_hook);
-  error_assert(rv != 0, "Failed to prepare CTFTeamMenu::ShowPanel hook\n");
-  
-  rv = funchook_prepare(funchook, (void**)&map_info_menu_show_panel_original, (void*)map_info_menu_show_panel_hook);
-  error_assert(rv != 0, "Failed to prepare CTFMapInfoMenu::ShowPanel hook\n");
-
-  rv = funchook_prepare(funchook, (void**)&text_window_show_panel_original, (void*)text_window_show_panel_hook);
-  error_assert(rv != 0, "Failed to prepare CTFTextWindow::ShowPanel hook\n");
-
-  key_values_constructor_original = (KeyValues* (*)(void*, const char*))sigscan_module("client.so", "55 66 0F EF C0 48 89 E5 53 48 89 FB 48 89 F7");
+  key_values_constructor_original = (KeyValues* (*)(void*, const char*))sigscan_module("client.so", "55 B8 FF FF FF FF 66 0F EF C0 48 89 E5 53 48 89 FB 48 89 F7 48 83 EC 08 BE 01 00 00 00 48 89 03 0F 11 43 08 48 C7 43 18 00 00 00 00 48 C7 43 20 00 00 01 00");
+  if (key_values_constructor_original == nullptr) {
+    key_values_constructor_original = (KeyValues* (*)(void*, const char*))sigscan_module("client.so", "55 B8 FF FF FF FF 66 0F EF C0 48 89 E5 53");
+  }
+  if (key_values_constructor_original == nullptr) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) key_values_constructor_original = (KeyValues* (*)(void*, const char*))((uintptr_t)client_base + 0x1f032a0);
+  }
   error_assert(key_values_constructor_original == nullptr, "Failed to find KeyValues() constructor");
 
   key_values_set_int_original = (void (*)(void*, const char*, int))sigscan_module("client.so", "55 48 89 E5 53 89 D3 48 83 EC 08 48 85 F6 74 ? 80 3E 00 74 ? BA 01 00 00 00 E8 ? ? ? ? 48 89 C7 48 85 FF 74 ? 89 5F 18 C6 47 20 02");
+  if (key_values_set_int_original == nullptr) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) key_values_set_int_original = (void (*)(void*, const char*, int))((uintptr_t)client_base + 0x1f040b0);
+  }
   error_assert(key_values_set_int_original == nullptr, "Failed to find KeyValues::SetInt()");
-  rv = funchook_prepare(funchook, (void**)&key_values_set_int_original, (void*)key_values_set_int_hook);
-  error_assert(rv != 0, "Failed to prepare KeyValues::SetInt() hook\n");
+  // Do NOT hook KeyValues::SetInt() via funchook - the hook only forwards to original,
+  // and detouring SetInt causes race conditions across background threads during startup.
   
-  key_values_load_from_buffer_original = (bool (*)(void*, const char*, const char*, void*, const char*))sigscan_module("client.so", "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC ? ? ? ? 48 85 D2 48 89 BD");
+  key_values_load_from_buffer_original = (bool (*)(void*, const char*, const char*, void*, const char*))sigscan_module("client.so", "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC 88 00 00 00 48 85 D2 48 89 BD 70 FF FF FF");
+  if (key_values_load_from_buffer_original == nullptr) {
+    key_values_load_from_buffer_original = (bool (*)(void*, const char*, const char*, void*, const char*))sigscan_module("client.so", "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC ? ? ? ? 48 85 D2 48 89 BD");
+  }
+  if (key_values_load_from_buffer_original == nullptr) {
+    void* client_base = get_module_base_address("client.so");
+    if (client_base) key_values_load_from_buffer_original = (bool (*)(void*, const char*, const char*, void*, const char*))((uintptr_t)client_base + 0x1f06cd0);
+  }
   error_assert(key_values_load_from_buffer_original == nullptr, "Failed to find KeyValues::LoadFromBuffer()");  
   
   // Hook Vulkan if present
@@ -437,22 +523,14 @@ void entry() {
 
       vkDestroyDevice(vk_fake_device, vk_allocator);
 
-      // Hook the functions
-      rv = funchook_prepare(funchook, (void**)&queue_present_original, (void*)queue_present_hook);
-      error_assert(rv != 0, "Failed to prepare vkQueuePresentKHR hook\n");
-
-      rv = funchook_prepare(funchook, (void**)&acquire_next_image_original, (void*)acquire_next_image_hook);
-      error_assert(rv != 0, "Failed to prepare vkAcquireNextImageKHR hook\n");
-
-      rv = funchook_prepare(funchook, (void**)&acquire_next_image2_original, (void*)acquire_next_image2_hook);
-      error_assert(rv != 0, "Failed to prepare vkAcquireNextImage2KHR hook\n");
-
-      rv = funchook_prepare(funchook, (void**)&create_swapchain_original, (void*)create_swapchain_hook);
-      error_assert(rv != 0, "Failed to prepare vkCreateSwapchainKHR hook\n");
+      // Hook the functions safely
+      safe_prepare(funchook, (void**)&queue_present_original, (void*)queue_present_hook, "vkQueuePresentKHR");
+      safe_prepare(funchook, (void**)&acquire_next_image_original, (void*)acquire_next_image_hook, "vkAcquireNextImageKHR");
+      safe_prepare(funchook, (void**)&acquire_next_image2_original, (void*)acquire_next_image2_hook, "vkAcquireNextImage2KHR");
+      safe_prepare(funchook, (void**)&create_swapchain_original, (void*)create_swapchain_hook, "vkCreateSwapchainKHR");
 
       print("Vulkan hooks prepared successfully\n");
-
-      dlclose(lib_vulkan_handle);
+      // Keep lib_vulkan_handle open to prevent unmapping hook targets before funchook_install
     }
   } else {
     print("DXVK not detected (running in OpenGL mode)\n");

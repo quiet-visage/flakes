@@ -40,6 +40,10 @@ inline void* get_interface(const char* lib_path, const char* version) {
 }
 
 inline bool write_to_table(void** vtable, int index, void* func) {
+  if (vtable == nullptr || index < 0) {
+    print("write_to_table: invalid vtable %p or index %d\n", vtable, index);
+    return false;
+  }
 
   const long page_size = sysconf(_SC_PAGESIZE);
 
@@ -48,22 +52,28 @@ inline bool write_to_table(void** vtable, int index, void* func) {
   void* entry_page = (void*)((uint64_t)entry_addr & ~(page_size - 1));
   print("vfunc table entry %d page found at %p\n", index, entry_page);
 
-  if (mprotect(entry_page, page_size, PROT_READ | PROT_WRITE) != 0) {
-    print("mprotect failed to change page protection\n");
-    return false;
+  if (mprotect(entry_page, page_size, PROT_READ | PROT_WRITE | PROT_EXEC) != 0) {
+    if (mprotect(entry_page, page_size, PROT_READ | PROT_WRITE) != 0) {
+      print("mprotect failed to change page protection\n");
+      return false;
+    }
   }
 
   *entry_addr = func;
 
-  if (mprotect(entry_page, page_size, PROT_READ) != 0) {
-    print("mprotect failed to reset page protection\n");
-    return false;
+  // Restore page protection without stripping PROT_EXEC (stripping PROT_EXEC causes SIGSEGV on code pages)
+  if (mprotect(entry_page, page_size, PROT_READ | PROT_EXEC) != 0) {
+    mprotect(entry_page, page_size, PROT_READ);
   }
 
   return true;
 }
 
 inline bool sdl_hook(void* lib_handle, const char* func_name, void* hook, void** original) {
+  if (!lib_handle || !func_name || !hook) {
+    return false;
+  }
+
   void* func = dlsym(lib_handle, func_name);
 
   if (!func) {
@@ -73,23 +83,37 @@ inline bool sdl_hook(void* lib_handle, const char* func_name, void* hook, void**
 
   print("%s wrapper found at %p\n", func_name, func);
 
-  /* The symbols resolve to a wrapper function. They are a just a 2 byte
-   * `jmp` and then a SIGNED (?) 4 byte offset relative to the instruction
-   * pointer. Adding `ip + the offset` is a pointer to the address of the 
-   * function that is wrapped. We save the orignal and call it in the hook. */
-  int offset = *(int *)((unsigned long)func + 2);
-  void** ptr_to_func = (void **)((unsigned long)func + 6 + offset);
+  /* The symbols resolve to a wrapper function. Verify it starts with
+   * `jmp *GOT[rip+offset]` (0xFF 0x25) before attempting to calculate
+   * the GOT address. Otherwise we would write out-of-bounds to arbitrary memory. */
+  unsigned char* b = (unsigned char*)func;
+  if (b[0] != 0xFF || b[1] != 0x25) {
+    print("WARNING: %s does not begin with jmp *GOT[rip+offset] (bytes: %02X %02X), skipping to avoid crash\n",
+          func_name, b[0], b[1]);
+    return false;
+  }
+
+  int32_t offset = *(int32_t *)((unsigned long)func + 2);
+  void** ptr_to_func = (void **)((unsigned long)func + 6 + (intptr_t)offset);
   *original = *ptr_to_func;
 
   print("Original %s at %p\n", func_name, *original);
 
-  // The page should have rw perms already! No mprotect needed
+  // GOT page may be read-only under Full RELRO, ensure write permissions
+  const long page_size = sysconf(_SC_PAGESIZE);
+  void* ptr_page = (void*)((uint64_t)ptr_to_func & ~(page_size - 1));
+  mprotect(ptr_page, page_size, PROT_READ | PROT_WRITE);
+
   *ptr_to_func = hook;
 
   return true;
 }
 
 inline bool restore_sdl_hook(void* lib_handle, const char* func_name, void* original) {
+  if (!lib_handle || !func_name || !original) {
+    return false;
+  }
+
   void *func = dlsym(lib_handle, func_name);
 
   if (!func) {
@@ -97,8 +121,19 @@ inline bool restore_sdl_hook(void* lib_handle, const char* func_name, void* orig
     return false;
   }
 
-  int offset = *(int*)((unsigned long)func + 2);
-  *(void **)((unsigned long)func + 6 + offset) = original;
+  unsigned char* b = (unsigned char*)func;
+  if (b[0] != 0xFF || b[1] != 0x25) {
+    return false;
+  }
+
+  int32_t offset = *(int32_t*)((unsigned long)func + 2);
+  void** ptr_to_func = (void **)((unsigned long)func + 6 + (intptr_t)offset);
+
+  const long page_size = sysconf(_SC_PAGESIZE);
+  void* ptr_page = (void*)((uint64_t)ptr_to_func & ~(page_size - 1));
+  mprotect(ptr_page, page_size, PROT_READ | PROT_WRITE);
+
+  *ptr_to_func = original;
 
   return true;
 }

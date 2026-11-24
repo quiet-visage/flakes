@@ -24,7 +24,6 @@ inline void (*get_window_size_original)(SDL_Window* window, int* w, int* h) = nu
 int event_filter(void* userdata, SDL_Event* event) {
   if (menu_focused == false) return 1; // Don't filter anything if the menu is closed
 
-  
   if (sdl_window != nullptr && ImGui::IsImGuiFullyInitialized())
     ImGui_ImplSDL2_ProcessEvent(event);
 
@@ -99,6 +98,8 @@ inline void swap_window_hook(SDL_Window* window) {
     ImGui_ImplSDL2_InitForOpenGL(window, nullptr);    
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigWindowsMoveFromTitleBarOnly = true;
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+    io.IniFilename = nullptr;
 
     orig_style = ImGui::GetStyle();
 

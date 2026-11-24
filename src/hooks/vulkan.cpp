@@ -68,6 +68,10 @@ inline VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* presen
   if (ImGui::GetCurrentContext() == nullptr) {
     print("Initializing ImGui context for Vulkan (sdl_window=%p)\n", (void*)sdl_window);
     ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+    io.IniFilename = nullptr;
     ImGui_ImplSDL2_InitForVulkan(sdl_window);
   }
 
@@ -139,11 +143,11 @@ inline VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* presen
 	VkAttachmentDescription attachment = { };
 	attachment.format = VK_FORMAT_B8G8R8A8_UNORM;
 	attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 	attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	attachment.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 	VkAttachmentReference color_attachment = { };
@@ -296,6 +300,11 @@ inline VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* presen
       ImGui_ImplVulkan_Init(&init_info);
       print("ImGui_ImplVulkan_Init completed (resolution=%.0fx%.0f)\n", resolution.x, resolution.y);
 
+      ImGuiIO& io = ImGui::GetIO();
+      io.ConfigWindowsMoveFromTitleBarOnly = true;
+      io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+      io.IniFilename = nullptr;
+
       orig_style = ImGui::GetStyle();
 
       set_imgui_theme();
@@ -328,32 +337,40 @@ inline VkResult queue_present_hook(VkQueue queue, const VkPresentInfoKHR* presen
     vkCmdEndRenderPass(fd->CommandBuffer);
     vkEndCommandBuffer(fd->CommandBuffer);
 
-    constexpr VkPipelineStageFlags stages_wait = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-    {
+    const uint32_t waitSemaphoresCount = (i == 0) ? present_info->waitSemaphoreCount : 0;
+    if (waitSemaphoresCount == 0 && graphicQueue) {
+      constexpr VkPipelineStageFlags stages_wait = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+      {
+        VkSubmitInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        info.pWaitDstStageMask = &stages_wait;
+        info.signalSemaphoreCount = 1;
+        info.pSignalSemaphores = &fsd->RenderCompleteSemaphore;
+        vkQueueSubmit(queue, 1, &info, VK_NULL_HANDLE);
+      }
+      {
+        VkSubmitInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        info.commandBufferCount = 1;
+        info.pCommandBuffers = &fd->CommandBuffer;
+        info.pWaitDstStageMask = &stages_wait;
+        info.waitSemaphoreCount = 1;
+        info.pWaitSemaphores = &fsd->RenderCompleteSemaphore;
+        info.signalSemaphoreCount = 1;
+        info.pSignalSemaphores = &fsd->ImageAcquiredSemaphore;
+        vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
+      }
+    } else {
+      std::vector<VkPipelineStageFlags> stages_wait(waitSemaphoresCount, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
       VkSubmitInfo info = {};
-      info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-      info.pWaitDstStageMask = &stages_wait;
-
-      info.signalSemaphoreCount = 1;
-      info.pSignalSemaphores = &fsd->RenderCompleteSemaphore;
-
-      vkQueueSubmit(queue, 1, &info, VK_NULL_HANDLE);
-    }
-
-    {
-      VkSubmitInfo info = { };
       info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
       info.commandBufferCount = 1;
       info.pCommandBuffers = &fd->CommandBuffer;
-
-      info.pWaitDstStageMask = &stages_wait;
-      info.waitSemaphoreCount = 1;
-      info.pWaitSemaphores = &fsd->RenderCompleteSemaphore;
-
-      info.signalSemaphoreCount = 0;
-      info.pSignalSemaphores = nullptr;
-
+      info.pWaitDstStageMask = stages_wait.empty() ? nullptr : stages_wait.data();
+      info.waitSemaphoreCount = waitSemaphoresCount;
+      info.pWaitSemaphores = present_info->pWaitSemaphores;
+      info.signalSemaphoreCount = waitSemaphoresCount;
+      info.pSignalSemaphores = present_info->pWaitSemaphores;
       vkQueueSubmit(graphicQueue, 1, &info, fd->Fence);
     }
   }
