@@ -5,6 +5,7 @@ export import core.print;
 export import core.assert;
 export import core.vec;
 export import core.memory;
+export import gui.config_io;
 export import sdk.classes.keyvalues;
 export import sdk.interfaces.engine;
 export import sdk.interfaces.client;
@@ -581,10 +582,17 @@ void entry() {
   // Misc static variables and hookable things
   unsigned long func_address_2 = (unsigned long)sigscan_module("client.so", "48 8D 05 ? ? ? ? BA ? ? ? ? 89 10"); // credz: vannie / @clsendmove on github
   error_assert(func_address_2 == 0, "Failed to find random_seed signature");
-  unsigned int random_seed_eaddr = *(unsigned int*)(func_address_2 + 0x3);
+  int32_t random_seed_eaddr = *(int32_t*)(func_address_2 + 0x3);
   unsigned long func_address_2_next_instruction = (unsigned long)(func_address_2 + 0x7);
-  random_seed = (uint32_t*)((void*)(func_address_2_next_instruction + random_seed_eaddr));
-  
+  random_seed = (uint32_t*)((void*)(func_address_2_next_instruction + (intptr_t)random_seed_eaddr));
+
+  // Auto-load default configuration profile if available
+  try {
+    load_config_file("default");
+  } catch (...) {
+    print("[Config] Exception during auto-load\n");
+  }
+
   return;
 }
 

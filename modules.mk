@@ -20,6 +20,10 @@ obj/src_core_entity_cache.hpp.o: src/core/entity_cache.hpp obj/src_core_sys.hpp.
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
 
+obj/src_core_json.hpp.o: src/core/json.hpp obj/src_core_sys.hpp.o obj/std.compat.o
+	@mkdir -p obj gcm.cache
+	$(CC) $(CFLAGS) -x c++ -c $< -o $@
+
 obj/src_core_lookup.hpp.o: src/core/lookup.hpp obj/src_core_memory.hpp.o obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/std.compat.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
@@ -56,11 +60,15 @@ obj/src_gui_config.hpp.o: src/gui/config.hpp obj/src_core_sys.hpp.o obj/src_core
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
 
+obj/src_gui_config_io.hpp.o: src/gui/config_io.hpp obj/src_core_json.hpp.o obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_core_vec.hpp.o obj/src_gui_config.hpp.o obj/std.compat.o
+	@mkdir -p obj gcm.cache
+	$(CC) $(CFLAGS) -x c++ -c $< -o $@
+
 obj/src_gui_indicators.hpp.o: src/gui/indicators.hpp obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/std.compat.o obj/src_subsystems_observer_telemetry_observer_telemetry.hpp.o obj/src_subsystems_tick_scheduler_tick_scheduler.hpp.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
 
-obj/src_gui_menu.hpp.o: src/gui/menu.hpp obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/std.compat.o obj/src_subsystems_graph_navigation_navmesh.hpp.o obj/src_subsystems_hardware_bridge_hardware_bridge.hpp.o
+obj/src_gui_menu.hpp.o: src/gui/menu.hpp obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/src_gui_config_io.hpp.o obj/std.compat.o obj/src_subsystems_graph_navigation_navmesh.hpp.o obj/src_subsystems_hardware_bridge_hardware_bridge.hpp.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
 
@@ -160,7 +168,7 @@ obj/src_hooks_vulkan.cpp.o: src/hooks/vulkan.cpp obj/src_core_print.hpp.o obj/sr
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS)  -c $< -o $@
 
-obj/src_main.cpp.o: src/main.cpp obj/src_core_assert.hpp.o obj/src_core_memory.hpp.o obj/src_core_print.hpp.o obj/src_core_random_seed.hpp.o obj/src_core_sys.hpp.o obj/src_core_vec.hpp.o obj/src_hooks_cl_move.cpp.o obj/src_hooks_class_menu_show_panel.cpp.o obj/src_hooks_client_create_move.cpp.o obj/src_hooks_client_mode_create_move.cpp.o obj/src_hooks_draw_model_execute.cpp.o obj/src_hooks_draw_view_model.cpp.o obj/src_hooks_draw_view_models.cpp.o obj/src_hooks_fire_event_client_side.cpp.o obj/src_hooks_frame_stage_notify.cpp.o obj/src_hooks_hooks.cpp.o obj/src_hooks_in_cond.cpp.o obj/src_hooks_intro_menu_on_tick.cpp.o obj/src_hooks_load_white_list.cpp.o obj/src_hooks_map_info_menu_show_panel.cpp.o obj/src_hooks_override_view.cpp.o obj/src_hooks_paint_traverse.cpp.o obj/src_hooks_scene_end.cpp.o obj/src_hooks_sdl.cpp.o obj/src_hooks_should_draw_local_player.cpp.o obj/src_hooks_should_draw_this_player.cpp.o obj/src_hooks_team_menu_show_panel.cpp.o obj/src_hooks_text_window_show_panel.cpp.o obj/src_hooks_vulkan.cpp.o obj/src_sdk_classes_keyvalues.hpp.o obj/src_sdk_interfaces_attribute_manager.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_client_state.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_debug_overlay.hpp.o obj/src_sdk_interfaces_engine.hpp.o obj/src_sdk_interfaces_engine_trace.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/src_sdk_interfaces_game_event_manager.hpp.o obj/src_sdk_interfaces_game_movement.hpp.o obj/src_sdk_interfaces_global_vars.hpp.o obj/src_sdk_interfaces_input.hpp.o obj/src_sdk_interfaces_material_system.hpp.o obj/src_sdk_interfaces_model_render.hpp.o obj/src_sdk_interfaces_move_helper.hpp.o obj/src_sdk_interfaces_netvars.hpp.o obj/src_sdk_interfaces_prediction.hpp.o obj/src_sdk_interfaces_render_view.hpp.o obj/src_sdk_interfaces_steam_client.hpp.o obj/src_sdk_interfaces_steam_friends.hpp.o obj/src_sdk_interfaces_surface.hpp.o obj/std.compat.o
+obj/src_main.cpp.o: src/main.cpp obj/src_core_assert.hpp.o obj/src_core_memory.hpp.o obj/src_core_print.hpp.o obj/src_core_random_seed.hpp.o obj/src_core_sys.hpp.o obj/src_core_vec.hpp.o obj/src_gui_config_io.hpp.o obj/src_hooks_cl_move.cpp.o obj/src_hooks_class_menu_show_panel.cpp.o obj/src_hooks_client_create_move.cpp.o obj/src_hooks_client_mode_create_move.cpp.o obj/src_hooks_draw_model_execute.cpp.o obj/src_hooks_draw_view_model.cpp.o obj/src_hooks_draw_view_models.cpp.o obj/src_hooks_fire_event_client_side.cpp.o obj/src_hooks_frame_stage_notify.cpp.o obj/src_hooks_hooks.cpp.o obj/src_hooks_in_cond.cpp.o obj/src_hooks_intro_menu_on_tick.cpp.o obj/src_hooks_load_white_list.cpp.o obj/src_hooks_map_info_menu_show_panel.cpp.o obj/src_hooks_override_view.cpp.o obj/src_hooks_paint_traverse.cpp.o obj/src_hooks_scene_end.cpp.o obj/src_hooks_sdl.cpp.o obj/src_hooks_should_draw_local_player.cpp.o obj/src_hooks_should_draw_this_player.cpp.o obj/src_hooks_team_menu_show_panel.cpp.o obj/src_hooks_text_window_show_panel.cpp.o obj/src_hooks_vulkan.cpp.o obj/src_sdk_classes_keyvalues.hpp.o obj/src_sdk_interfaces_attribute_manager.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_client_state.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_debug_overlay.hpp.o obj/src_sdk_interfaces_engine.hpp.o obj/src_sdk_interfaces_engine_trace.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/src_sdk_interfaces_game_event_manager.hpp.o obj/src_sdk_interfaces_game_movement.hpp.o obj/src_sdk_interfaces_global_vars.hpp.o obj/src_sdk_interfaces_input.hpp.o obj/src_sdk_interfaces_material_system.hpp.o obj/src_sdk_interfaces_model_render.hpp.o obj/src_sdk_interfaces_move_helper.hpp.o obj/src_sdk_interfaces_netvars.hpp.o obj/src_sdk_interfaces_prediction.hpp.o obj/src_sdk_interfaces_render_view.hpp.o obj/src_sdk_interfaces_steam_client.hpp.o obj/src_sdk_interfaces_steam_friends.hpp.o obj/src_sdk_interfaces_surface.hpp.o obj/std.compat.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS)  -c $< -o $@
 
@@ -411,6 +419,7 @@ obj/vendor_imgui_dearimgui.hpp.o: vendor/imgui/dearimgui.hpp obj/src_core_sys.hp
 MODULE_OBJS = $(STD_OBJS) \
   obj/src_core_assert.hpp.o \
   obj/src_core_entity_cache.hpp.o \
+  obj/src_core_json.hpp.o \
   obj/src_core_lookup.hpp.o \
   obj/src_core_math.hpp.o \
   obj/src_core_memory.hpp.o \
@@ -420,6 +429,7 @@ MODULE_OBJS = $(STD_OBJS) \
   obj/src_core_sys.hpp.o \
   obj/src_core_vec.hpp.o \
   obj/src_gui_config.hpp.o \
+  obj/src_gui_config_io.hpp.o \
   obj/src_gui_indicators.hpp.o \
   obj/src_gui_menu.hpp.o \
   obj/src_hooks_cl_move.cpp.o \

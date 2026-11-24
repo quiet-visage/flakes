@@ -2,6 +2,7 @@ export module gui.menu;
 export import std.compat;
 export import core.sys;
 export import gui.config;
+export import gui.config_io;
 export import subsystems.graph_navigation.navmesh;
 export import subsystems.hardware_bridge.hardware_bridge_hpp;
 export import core.print;
@@ -15,6 +16,8 @@ export extern "C++" {
 inline SDL_Window* sdl_window = nullptr;
 inline bool menu_focused = false;
 inline ImFont* ui_font = nullptr;
+inline std::string active_profile_name = "default";
+inline std::string config_operation_status = "";
 
 alignas(8) inline constexpr unsigned char google_sans_code_nerd_font_ttf[] = {
 #embed "GoogleSansCodeNerdFont-Medium.ttf"
@@ -694,6 +697,60 @@ inline void draw_diagnostics_tab(void) {
   if (ImGui::Button("Invalidate & Reparse .nav Mesh", ImVec2(-1, 0))) {
     mesh.map_name = "";
   }
+
+  ImGui::Spacing();
+  ImGui::Separator();
+  ImGui::Spacing();
+  ImGui::SectionHeader("\xEF\x82\x85  JSON Configuration Profiles");
+
+  static int profile_idx = 0;
+  std::vector<std::string> profiles = get_profile_list();
+  if (profile_idx >= (int)profiles.size()) profile_idx = 0;
+
+  ImGui::TextUnformatted("Stored Profile");
+  ImGui::SetNextItemWidth(-1);
+  if (ImGui::BeginCombo("##ProfileSelector", profiles.empty() ? "default" : profiles[profile_idx].c_str())) {
+    for (int i = 0; i < (int)profiles.size(); ++i) {
+      bool is_selected = (i == profile_idx);
+      if (ImGui::Selectable(profiles[i].c_str(), is_selected)) {
+        profile_idx = i;
+        active_profile_name = profiles[i];
+      }
+      if (is_selected) {
+        ImGui::SetItemDefaultFocus();
+      }
+    }
+    ImGui::EndCombo();
+  }
+
+  float cfg_btn_w = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+  if (ImGui::Button("Save Profile", ImVec2(cfg_btn_w, 0))) {
+    if (save_config_file(active_profile_name)) {
+      config_operation_status = "Saved '" + active_profile_name + "'";
+    } else {
+      config_operation_status = "Save Failed!";
+    }
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("Load Profile", ImVec2(cfg_btn_w, 0))) {
+    if (load_config_file(active_profile_name)) {
+      config_operation_status = "Loaded '" + active_profile_name + "'";
+    } else {
+      config_operation_status = "Load Failed!";
+    }
+  }
+
+  if (ImGui::Button("Reset Factory Defaults", ImVec2(-1, 0))) {
+    reset_config_defaults();
+    config_operation_status = "Reset to Defaults";
+  }
+
+  ImGui::Spacing();
+  std::string cfg_dir = get_config_directory();
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.45f, 0.47f, 0.50f, 1.00f));
+  ImGui::TextUnformatted("Storage:");
+  ImGui::TextUnformatted(cfg_dir.c_str());
+  ImGui::PopStyleColor();
   ImGui::EndChild();
 
   ImGui::SameLine();
@@ -790,7 +847,43 @@ inline void draw_menu(void) {
     draw_tab(style, "\xEF\x84\xA4  Navigation",  &tab, 5);
     draw_tab(style, "\xEF\x86\x88  Diagnostics", &tab, 6);
 
-    float footer_y = ImGui::GetWindowHeight() - 30.0f;
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.120f, 0.430f, 0.320f, 1.00f));
+    ImGui::TextCentered("CONFIGURATION");
+    ImGui::PopStyleColor();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::SetNextItemWidth(-1);
+    ImGui::InputText("##SidebarProfile", &active_profile_name);
+
+    float btn_w = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+    if (ImGui::Button("Save", ImVec2(btn_w, 28))) {
+      if (save_config_file(active_profile_name)) {
+        config_operation_status = "Saved profile!";
+      } else {
+        config_operation_status = "Save error!";
+      }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Load", ImVec2(btn_w, 28))) {
+      if (load_config_file(active_profile_name)) {
+        config_operation_status = "Loaded profile!";
+      } else {
+        config_operation_status = "Not found!";
+      }
+    }
+
+    if (!config_operation_status.empty()) {
+      ImGui::Spacing();
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.120f, 0.430f, 0.320f, 0.90f));
+      ImGui::TextCentered(config_operation_status.c_str());
+      ImGui::PopStyleColor();
+    }
+
+    float footer_y = ImGui::GetWindowHeight() - 36.0f;
     if (ImGui::GetCursorPosY() < footer_y) {
       ImGui::SetCursorPosY(footer_y);
     }

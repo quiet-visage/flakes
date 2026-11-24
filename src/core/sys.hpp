@@ -460,9 +460,11 @@ export extern "C++" {
     using ::ImGui::PushStyleVar;
     using ::ImGui::Render;
     using ::ImGui::SameLine;
+    using ::ImGui::Selectable;
     using ::ImGui::Separator;
     using ::ImGui::SetCursorPosX;
     using ::ImGui::SetCursorPosY;
+    using ::ImGui::SetItemDefaultFocus;
     using ::ImGui::SetNextItemWidth;
     using ::ImGui::SetNextWindowSize;
     using ::ImGui::SliderFloat;
