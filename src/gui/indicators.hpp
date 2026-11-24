@@ -24,7 +24,7 @@ inline void draw_tick_scheduler_indicator(void) {
     char overlay_buf[36];
     std::snprintf(overlay_buf, sizeof(overlay_buf), "%d / %d Buffered Ticks", current_ticks, max_ticks);
 
-    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.52f, 0.88f, 0.76f, 0.85f));
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.120f, 0.430f, 0.320f, 0.85f));
     ImGui::ProgressBar(fraction, ImVec2(-1.0f, 22.0f), overlay_buf);
     ImGui::PopStyleColor();
   }

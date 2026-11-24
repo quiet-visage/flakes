@@ -76,74 +76,76 @@ inline void init_imgui_fonts(void) {
 inline void set_imgui_theme(void) {
   init_imgui_fonts();
 
-  // Framecraft · Obsidian & Mint theme
+  // Alabaster Cream & Botanical Jade — Positive Polarity Theme
+  // Tailored specifically around #FAF8F5 with high visual contrast and breathable spatial rhythm
   ImGuiStyle& style = ImGui::GetStyle();
   ImVec4* colors = style.Colors;
 
-  style.WindowRounding    = 12.0f;
+  style.WindowRounding    = 14.0f;
   style.ChildRounding     = 10.0f;
-  style.FrameRounding     = 7.0f;
+  style.FrameRounding     = 8.0f;
   style.PopupRounding     = 10.0f;
   style.ScrollbarRounding = 9.0f;
   style.GrabRounding      = 6.0f;
-  style.TabRounding       = 7.0f;
+  style.TabRounding       = 8.0f;
 
   style.WindowBorderSize  = 1.0f;
   style.ChildBorderSize   = 1.0f;
   style.PopupBorderSize   = 1.0f;
   style.FrameBorderSize   = 1.0f;
 
-  style.WindowPadding     = ImVec2(14.0f, 14.0f);
-  style.FramePadding      = ImVec2(10.0f, 5.0f);
-  style.ItemSpacing       = ImVec2(10.0f, 8.0f);
-  style.ItemInnerSpacing  = ImVec2(8.0f, 6.0f);
-  style.ScrollbarSize     = 11.0f;
-  style.GrabMinSize       = 10.0f;
+  // Generous spacing to make the menu feel open, comfortable, and spacious
+  style.WindowPadding     = ImVec2(20.0f, 18.0f);
+  style.FramePadding      = ImVec2(12.0f, 7.0f);
+  style.ItemSpacing       = ImVec2(12.0f, 10.0f);
+  style.ItemInnerSpacing  = ImVec2(10.0f, 8.0f);
+  style.ScrollbarSize     = 12.0f;
+  style.GrabMinSize       = 12.0f;
 
-  // Distinct surface elevation hierarchy
-  colors[ImGuiCol_WindowBg]             = ImVec4(0.08f, 0.10f, 0.12f, 0.98f);
-  colors[ImGuiCol_ChildBg]              = ImVec4(0.11f, 0.14f, 0.17f, 1.00f);
-  colors[ImGuiCol_PopupBg]              = ImVec4(0.10f, 0.13f, 0.16f, 0.98f);
-  colors[ImGuiCol_Border]               = ImVec4(0.20f, 0.25f, 0.30f, 0.85f);
-  colors[ImGuiCol_BorderShadow]         = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+  // Surfaces tailored around #FAF8F5 (250, 248, 245)
+  colors[ImGuiCol_WindowBg]             = ImVec4(0.980f, 0.973f, 0.961f, 0.98f);
+  colors[ImGuiCol_ChildBg]              = ImVec4(1.000f, 1.000f, 1.000f, 0.96f);
+  colors[ImGuiCol_PopupBg]              = ImVec4(1.000f, 1.000f, 1.000f, 0.99f);
+  colors[ImGuiCol_Border]               = ImVec4(0.875f, 0.855f, 0.825f, 0.90f);
+  colors[ImGuiCol_BorderShadow]         = ImVec4(0.000f, 0.000f, 0.000f, 0.00f);
 
-  // Interactive controls (contrasting against ChildBg)
-  colors[ImGuiCol_FrameBg]              = ImVec4(0.16f, 0.20f, 0.25f, 1.00f);
-  colors[ImGuiCol_FrameBgHovered]       = ImVec4(0.21f, 0.26f, 0.32f, 1.00f);
-  colors[ImGuiCol_FrameBgActive]        = ImVec4(0.25f, 0.31f, 0.38f, 1.00f);
+  // Recessed controls & frames on white card surfaces
+  colors[ImGuiCol_FrameBg]              = ImVec4(0.945f, 0.933f, 0.910f, 1.00f);
+  colors[ImGuiCol_FrameBgHovered]       = ImVec4(0.895f, 0.880f, 0.845f, 1.00f);
+  colors[ImGuiCol_FrameBgActive]        = ImVec4(0.840f, 0.820f, 0.780f, 1.00f);
 
   // Titlebar
-  colors[ImGuiCol_TitleBg]              = ImVec4(0.07f, 0.09f, 0.11f, 1.00f);
-  colors[ImGuiCol_TitleBgActive]        = ImVec4(0.09f, 0.12f, 0.15f, 1.00f);
-  colors[ImGuiCol_TitleBgCollapsed]     = ImVec4(0.07f, 0.09f, 0.11f, 0.75f);
+  colors[ImGuiCol_TitleBg]              = ImVec4(0.945f, 0.933f, 0.910f, 1.00f);
+  colors[ImGuiCol_TitleBgActive]        = ImVec4(0.915f, 0.898f, 0.870f, 1.00f);
+  colors[ImGuiCol_TitleBgCollapsed]     = ImVec4(0.945f, 0.933f, 0.910f, 0.75f);
 
-  // Typography
-  colors[ImGuiCol_Text]                 = ImVec4(0.92f, 0.94f, 0.96f, 1.00f);
-  colors[ImGuiCol_TextDisabled]         = ImVec4(0.50f, 0.56f, 0.63f, 1.00f);
+  // Typography (Dark charcoal text for optimal readability in positive polarity)
+  colors[ImGuiCol_Text]                 = ImVec4(0.120f, 0.140f, 0.165f, 1.00f);
+  colors[ImGuiCol_TextDisabled]         = ImVec4(0.480f, 0.510f, 0.550f, 1.00f);
 
-  // Mint Accent
-  colors[ImGuiCol_CheckMark]            = ImVec4(0.52f, 0.88f, 0.76f, 1.00f);
-  colors[ImGuiCol_SliderGrab]           = ImVec4(0.52f, 0.88f, 0.76f, 0.90f);
-  colors[ImGuiCol_SliderGrabActive]     = ImVec4(0.64f, 0.94f, 0.84f, 1.00f);
+  // Botanical Jade Accent (Rich, high-contrast positive polarity accent)
+  colors[ImGuiCol_CheckMark]            = ImVec4(0.120f, 0.430f, 0.320f, 1.00f);
+  colors[ImGuiCol_SliderGrab]           = ImVec4(0.120f, 0.430f, 0.320f, 0.85f);
+  colors[ImGuiCol_SliderGrabActive]     = ImVec4(0.090f, 0.340f, 0.250f, 1.00f);
 
   // Buttons
-  colors[ImGuiCol_Button]               = ImVec4(0.16f, 0.20f, 0.25f, 1.00f);
-  colors[ImGuiCol_ButtonHovered]        = ImVec4(0.52f, 0.88f, 0.76f, 0.28f);
-  colors[ImGuiCol_ButtonActive]         = ImVec4(0.52f, 0.88f, 0.76f, 0.42f);
+  colors[ImGuiCol_Button]               = ImVec4(0.930f, 0.915f, 0.885f, 0.90f);
+  colors[ImGuiCol_ButtonHovered]        = ImVec4(0.120f, 0.430f, 0.320f, 0.15f);
+  colors[ImGuiCol_ButtonActive]         = ImVec4(0.120f, 0.430f, 0.320f, 0.28f);
 
   // Headers / Combos / Selectables
-  colors[ImGuiCol_Header]               = ImVec4(0.52f, 0.88f, 0.76f, 0.22f);
-  colors[ImGuiCol_HeaderHovered]        = ImVec4(0.52f, 0.88f, 0.76f, 0.34f);
-  colors[ImGuiCol_HeaderActive]         = ImVec4(0.52f, 0.88f, 0.76f, 0.46f);
+  colors[ImGuiCol_Header]               = ImVec4(0.120f, 0.430f, 0.320f, 0.10f);
+  colors[ImGuiCol_HeaderHovered]        = ImVec4(0.120f, 0.430f, 0.320f, 0.18f);
+  colors[ImGuiCol_HeaderActive]         = ImVec4(0.120f, 0.430f, 0.320f, 0.28f);
 
   // Separators & Scrollbars
-  colors[ImGuiCol_Separator]            = ImVec4(0.22f, 0.27f, 0.33f, 0.85f);
-  colors[ImGuiCol_SeparatorHovered]     = ImVec4(0.52f, 0.88f, 0.76f, 0.65f);
-  colors[ImGuiCol_SeparatorActive]      = ImVec4(0.52f, 0.88f, 0.76f, 0.90f);
-  colors[ImGuiCol_ScrollbarBg]          = ImVec4(0.08f, 0.10f, 0.12f, 0.60f);
-  colors[ImGuiCol_ScrollbarGrab]        = ImVec4(0.24f, 0.29f, 0.36f, 1.00f);
-  colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.32f, 0.39f, 0.47f, 1.00f);
-  colors[ImGuiCol_ScrollbarGrabActive]  = ImVec4(0.52f, 0.88f, 0.76f, 0.85f);
+  colors[ImGuiCol_Separator]            = ImVec4(0.865f, 0.845f, 0.810f, 0.85f);
+  colors[ImGuiCol_SeparatorHovered]     = ImVec4(0.120f, 0.430f, 0.320f, 0.55f);
+  colors[ImGuiCol_SeparatorActive]      = ImVec4(0.120f, 0.430f, 0.320f, 0.85f);
+  colors[ImGuiCol_ScrollbarBg]          = ImVec4(0.965f, 0.955f, 0.935f, 0.60f);
+  colors[ImGuiCol_ScrollbarGrab]        = ImVec4(0.800f, 0.780f, 0.740f, 0.85f);
+  colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.680f, 0.660f, 0.610f, 0.95f);
+  colors[ImGuiCol_ScrollbarGrabActive]  = ImVec4(0.120f, 0.430f, 0.320f, 0.85f);
 }
 
 inline void draw_kinematics_tab(void) {
@@ -151,8 +153,11 @@ inline void draw_kinematics_tab(void) {
   ImGui::Separator();
   ImGui::Spacing();
 
-  float col_width = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * 0.5f;
+  float avail_x = ImGui::GetContentRegionAvail().x;
+  float spacing = ImGui::GetStyle().ItemSpacing.x;
+  float col_width = (avail_x - spacing * 2.0f) / 3.0f;
 
+  // Column 1: Vector Targeting & Solver
   ImGui::BeginChild("##KinematicsTargetingCard", ImVec2(col_width, 0), ImGuiChildFlags_Borders);
   ImGui::SectionHeader("\xEF\x81\x9B  Vector Solver & Actuation");
 
@@ -657,7 +662,7 @@ inline void draw_navigation_tab(void) {
 }
 
 inline void draw_diagnostics_tab(void) {
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.76f, 0.35f, 1.00f));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.42f, 0.10f, 1.00f));
   ImGui::TextUnformatted("\xEF\x81\xB1  Runtime Introspection & Experimental Diagnostics");
   ImGui::PopStyleColor();
   ImGui::Separator();
@@ -803,37 +808,35 @@ inline void draw_diagnostics_tab(void) {
 inline void draw_tab(ImGuiStyle* style, const char* name, int* tab, int index) {
   bool selected = (*tab == index);
   if (selected) {
-    ImGui::PushStyleColor(ImGuiCol_Button, style->Colors[ImGuiCol_ButtonActive]);
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.52f, 0.88f, 0.76f, 0.80f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.98f, 1.00f, 0.99f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.120f, 0.430f, 0.320f, 0.12f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.120f, 0.430f, 0.320f, 0.65f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.090f, 0.350f, 0.250f, 1.00f));
   } else {
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.13f, 0.16f, 0.20f, 0.75f));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.955f, 0.940f, 0.915f, 0.70f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.875f, 0.855f, 0.825f, 0.50f));
+    ImGui::PushStyleColor(ImGuiCol_Text, style->Colors[ImGuiCol_Text]);
   }
 
-  ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.10f, 0.50f));
-  if (ImGui::Button(name, ImVec2(-1, 34))) {
+  ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.12f, 0.50f));
+  if (ImGui::Button(name, ImVec2(-1, 38))) {
     *tab = index;
   }
   ImGui::PopStyleVar();
 
-  if (selected) {
-    ImGui::PopStyleColor(3);
-  } else {
-    ImGui::PopStyleColor(1);
-  }
+  ImGui::PopStyleColor(3);
 }
 
 inline void draw_menu(void) {
   ImGuiStyle* style = &ImGui::GetStyle();
   style->WindowTitleAlign = ImVec2(0.02f, 0.5f);
 
-  ImGui::SetNextWindowSize(ImVec2(800, 500), ImGuiCond_Always);
-  if (ImGui::Begin("Flake Research & Development  \xC2\xB7  Source SDK 2013 Instrumentation", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
+  ImGui::SetNextWindowSize(ImVec2(1140, 720), ImGuiCond_Always);
+  if (ImGui::Begin("Flake Research & Development  \xC2\xB7  Source SDK 2013 Instrumentation", nullptr, ImGuiWindowFlags_NoCollapse)) {
     static int tab = 0;
 
     // Left Navigation Sidebar
-    ImGui::BeginChild("##NavigationSidebar", ImVec2(162, 0), ImGuiChildFlags_Borders);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.52f, 0.88f, 0.76f, 1.00f));
+    ImGui::BeginChild("##NavigationSidebar", ImVec2(215, 0), ImGuiChildFlags_Borders);
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.120f, 0.430f, 0.320f, 1.00f));
     ImGui::TextCentered("SUBSYSTEMS");
     ImGui::PopStyleColor();
     ImGui::Separator();

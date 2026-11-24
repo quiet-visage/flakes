@@ -495,7 +495,7 @@ export extern "C++" {
     }
 
     inline void SectionHeader(const char* label) {
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.52f, 0.88f, 0.76f, 1.00f));
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.120f, 0.430f, 0.320f, 1.00f));
       ImGui::TextUnformatted(label);
       ImGui::PopStyleColor();
       ImGui::Separator();
@@ -545,8 +545,8 @@ export extern "C++" {
       buttonLabel += id_suffix;
 
       if (*waitingFlag) {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.52f, 0.88f, 0.76f, 0.38f));
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.52f, 0.88f, 0.76f, 0.90f));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.120f, 0.430f, 0.320f, 0.15f));
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.120f, 0.430f, 0.320f, 0.80f));
       }
 
       if (ImGui::Button(buttonLabel.c_str(), ImVec2(115, 0))) {
