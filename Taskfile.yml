@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  TOOLBOX_NAME: fedora-toolbox-44
+  TOOLBOX_NAME: fedora-toolbox-45
   SRC_DIR: /var/home/anon/projects/Flakes
   STEAM_DIR: /var/home/anon/.var/app/com.valvesoftware.Steam/TeamFortress2-Linux-Internal
 
@@ -24,15 +24,18 @@ tasks:
       - task: sync
 
   sync:
-    desc: Copy built tf2.so, inject.sh, Taskfile.yml, and Makefile to Steam Flatpak directory
+    desc: Copy built tf2.so, scripts, Taskfile.yml, and Makefile to Steam Flatpak directory
     cmds:
       - mkdir -p "{{.STEAM_DIR}}"
-      - chmod +x "{{.SRC_DIR}}/scripts/inject.sh"
+      - chmod +x "{{.SRC_DIR}}/scripts/inject.sh" "{{.SRC_DIR}}/scripts/debug.sh"
       - cp -f --remove-destination "{{.SRC_DIR}}/tf2.so" "{{.STEAM_DIR}}/tf2.so"
       - cp -f --remove-destination "{{.SRC_DIR}}/scripts/inject.sh" "{{.STEAM_DIR}}/inject.sh"
+      - cp -f --remove-destination "{{.SRC_DIR}}/scripts/debug.sh" "{{.STEAM_DIR}}/debug.sh"
+      - rm -f "{{.STEAM_DIR}}/build.sh"
       - cp -f --remove-destination "{{.SRC_DIR}}/Taskfile.yml" "{{.STEAM_DIR}}/Taskfile.yml"
       - cp -f --remove-destination "{{.SRC_DIR}}/Makefile" "{{.STEAM_DIR}}/Makefile"
-      - chmod +x "{{.STEAM_DIR}}/inject.sh"
+      - cp -f --remove-destination "{{.SRC_DIR}}/modules.mk" "{{.STEAM_DIR}}/modules.mk"
+      - chmod +x "{{.STEAM_DIR}}/inject.sh" "{{.STEAM_DIR}}/debug.sh"
 
   ptrace:
     desc: Enable ptrace_scope=0 on the host

@@ -11,6 +11,7 @@ gcm.cache/
 
 # Built vendor artifacts
 vendor/funchook/
+vendor/libGLEW*
 
 # Nohup
 nohup.out
