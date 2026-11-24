@@ -23,6 +23,7 @@ alignas(8) inline constexpr unsigned char google_sans_code_nerd_font_ttf[] = {
 inline void get_input(SDL_Event* event) {
   ImGui::KeybindEvent(event, &config.targeting.key.waiting, &config.targeting.key.button);
   ImGui::KeybindEvent(event, &config.deflection.key.waiting, &config.deflection.key.button);
+  ImGui::KeybindEvent(event, &config.proximity_fuze.key.waiting, &config.proximity_fuze.key.button);
   ImGui::KeybindEvent(event, &config.viewport.camera_frustum.key.waiting, &config.viewport.camera_frustum.key.button);
   ImGui::KeybindEvent(event, &config.simulation.directives.recharge_button.waiting, &config.simulation.directives.recharge_button.button);
 }
@@ -313,28 +314,54 @@ inline void draw_kinematics_tab(void) {
   ImGui::SliderFloat("##DeflectionRange", &config.deflection.range, 50.0f, 512.0f, "%.0f HU");
 
   ImGui::Spacing();
-  ImGui::TextUnformatted("Deflectable Projectile Classes");
+  ImGui::Separator();
+  ImGui::Spacing();
+
+  ImGui::SectionHeader("\xEF\x84\x9E  Deflectable Projectiles");
   ImGui::Checkbox("Soldier / Sentry Missiles##Deflection", &config.deflection.projectiles.rockets);
   ImGui::Checkbox("Demoman Grenades##Deflection", &config.deflection.projectiles.grenades);
   ImGui::Checkbox("Demoman Sticky Bombs##Deflection", &config.deflection.projectiles.stickies);
   ImGui::Checkbox("Arrows & Bolts##Deflection", &config.deflection.projectiles.arrows);
   ImGui::Checkbox("Flares & Fireballs##Deflection", &config.deflection.projectiles.flares);
   ImGui::Checkbox("Throwables & Liquids##Deflection", &config.deflection.projectiles.throwables);
+  ImGui::EndChild();
+
+  ImGui::SameLine();
+
+  // Column 3: Demoman Stickybomb Proximity Fuze
+  ImGui::BeginChild("##KinematicsProximityFuzeCard", ImVec2(0, 0), ImGuiChildFlags_Borders);
+  ImGui::SectionHeader("\xEF\x87\xA2  Demoman Proximity Fuze");
+  ImGui::Checkbox("Enable Proximity Fuze (Stickies)", &config.proximity_fuze.master);
+  ImGui::Checkbox("Require Manual Trigger Gate##ProximityFuze", &config.proximity_fuze.use_key);
+  ImGui::TextUnformatted("Trigger Gate Key:");
+  ImGui::SameLine();
+  ImGui::KeybindBox(&config.proximity_fuze.key.waiting, &config.proximity_fuze.key.button, "ProximityFuzeKey");
+
+  ImGui::Spacing();
+  ImGui::TextUnformatted("Detonation Radius (Hammer Units)");
+  ImGui::SetNextItemWidth(-1);
+  ImGui::SliderFloat("##ProximityFuzeRadius", &config.proximity_fuze.radius, 50.0f, 300.0f, "%.0f HU");
+
+  ImGui::Checkbox("Raycast Line of Sight Validation", &config.proximity_fuze.check_visibility);
+  ImGui::Checkbox("Respect Arming Delay (0.7s / 1.52s)", &config.proximity_fuze.check_arm_time);
 
   ImGui::Spacing();
   ImGui::Separator();
   ImGui::Spacing();
 
-  ImGui::SectionHeader("\xEF\x86\x92  Optics State Machine");
-  ImGui::Checkbox("Auto-Transition Scope", &config.targeting.auto_scope);
-  ImGui::Checkbox("Auto-Unscope Post-Discharge", &config.targeting.auto_unscope);
-  ImGui::Checkbox("Require Scoped State", &config.targeting.scoped_only);
+  ImGui::SectionHeader("\xEF\x83\x80  Target Classification");
+  ImGui::Checkbox("Opposing Players##ProximityFuze", &config.proximity_fuze.target_players);
+  ImGui::Checkbox("Opposing Buildings##ProximityFuze", &config.proximity_fuze.target_buildings);
 
   ImGui::Spacing();
-  ImGui::NewLine();
-  ImGui::SectionHeader("\xEF\x83\x80  Actor Filtering");
-  ImGui::Checkbox("Exclude Steam Friends", &config.targeting.ignore_friends);
-  ImGui::Checkbox("Suppress on 1st-Person Observation", &config.targeting.ignore_spectated);
+  ImGui::Separator();
+  ImGui::Spacing();
+
+  ImGui::SectionHeader("\xEF\x80\x91  Actor Filtering");
+  ImGui::Checkbox("Exclude Steam Friends##ProximityFuze", &config.proximity_fuze.ignore_friends);
+  ImGui::Checkbox("Exclude Invulnerable Actors##ProximityFuze", &config.proximity_fuze.ignore_invulnerable);
+  ImGui::Checkbox("Ignore Cloaked / Invisible Spies##ProximityFuze", &config.proximity_fuze.ignore_cloaked);
+  ImGui::Checkbox("Ignore Disguised Spies##ProximityFuze", &config.proximity_fuze.ignore_disguised);
   ImGui::EndChild();
 }
 

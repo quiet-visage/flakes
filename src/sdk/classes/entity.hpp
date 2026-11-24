@@ -57,6 +57,7 @@ enum class_id {
   
   // Negative values are reserved by the hack for entity_cache.hpp
   // Entity::get_class_id() will not return any of these.
+  BUILDING = -4,
   PROJECTILE = -3,
   AMMO = -2,
   HEALTH_PACK = -1,
@@ -144,6 +145,23 @@ public:
   Entity* get_owner_entity(void) {
     return entity_list->entity_from_handle(this->get_owner_entity_handle());
   }
+
+  int get_thrower_handle(void) {
+    return mem::read<int>(this, netvar_offset<"DT_BaseGrenade", "m_hThrower", 0x8F0>());
+  }
+
+  Entity* get_thrower(void) {
+    return entity_list->entity_from_handle(this->get_thrower_handle());
+  }
+
+  bool is_owned_by(Entity* player) {
+    if (player == nullptr) return false;
+    Entity* thrower = this->get_thrower();
+    if (thrower == player) return true;
+    Entity* owner = this->get_owner_entity();
+    if (owner == player) return true;
+    return false;
+  }
   
   Vec3 get_origin(void) {
     // Hardcoded on purpose, do not resolve via NETVAR_OFFSET (see offsets.hpp).
@@ -217,6 +235,18 @@ public:
 
   int get_pipebomb_type(void) {
     return mem::read<int>(this, netvar_offset<"DT_TFProjectile_Pipebomb", "m_iType", 0x8FC>());
+  }
+
+  float get_pipebomb_creation_time(void) {
+    return mem::read<float>(this, netvar_offset<"DT_TFProjectile_Pipebomb", "m_flCreationTime", 0x8F8>());
+  }
+
+  bool is_pipebomb_defensive(void) {
+    return mem::read<bool>(this, netvar_offset<"DT_TFProjectile_Pipebomb", "m_bDefensiveBomb", 0x904>());
+  }
+
+  bool is_pipebomb_touched(void) {
+    return mem::read<bool>(this, netvar_offset<"DT_TFProjectile_Pipebomb", "m_bTouched", 0x905>());
   }
 
   projectile_type get_projectile_type(void) {

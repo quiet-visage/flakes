@@ -12,6 +12,7 @@ export import gui.config;
 export import core.print;
 export import subsystems.vector_targeting.vector_targeting;
 export import subsystems.active_deflection.active_deflection;
+export import subsystems.proximity_fuze.proximity_fuze;
 export import subsystems.locomotion.locomotion;
 export import subsystems.graph_navigation.parse_navmesh;
 export import subsystems.graph_navigation.graph_navigation;
@@ -86,6 +87,7 @@ inline bool client_mode_create_move_hook(void* me, float sample_time, user_cmd* 
   //begin_state_prediction(user_cmd); {
   run_vector_targeting(user_cmd, original_view_angles);
   run_active_deflection(user_cmd, original_view_angles);
+  run_proximity_fuze(user_cmd, original_view_angles);
   movement_fix(user_cmd, original_view_angles, original_forward_move, original_side_move);
   //}
   //end_state_prediction();

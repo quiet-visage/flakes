@@ -80,7 +80,7 @@ obj/src_hooks_client_create_move.cpp.o: src/hooks/client_create_move.cpp obj/src
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS)  -c $< -o $@
 
-obj/src_hooks_client_mode_create_move.cpp.o: src/hooks/client_mode_create_move.cpp obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/vendor_imgui_dearimgui.hpp.o obj/src_sdk_classes_player.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_engine.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/std.compat.o obj/src_subsystems_active_deflection_active_deflection.cpp.o obj/src_subsystems_graph_navigation_graph_navigation.cpp.o obj/src_subsystems_graph_navigation_parse_navmesh.cpp.o obj/src_subsystems_locomotion_locomotion.cpp.o obj/src_subsystems_state_prediction_state_prediction.cpp.o obj/src_subsystems_tick_scheduler_tick_scheduler.cpp.o obj/src_subsystems_tick_scheduler_tick_scheduler.hpp.o obj/src_subsystems_vector_targeting_vector_targeting.cpp.o
+obj/src_hooks_client_mode_create_move.cpp.o: src/hooks/client_mode_create_move.cpp obj/src_core_print.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/vendor_imgui_dearimgui.hpp.o obj/src_sdk_classes_player.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_engine.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/std.compat.o obj/src_subsystems_active_deflection_active_deflection.cpp.o obj/src_subsystems_proximity_fuze_proximity_fuze.cpp.o obj/src_subsystems_graph_navigation_graph_navigation.cpp.o obj/src_subsystems_graph_navigation_parse_navmesh.cpp.o obj/src_subsystems_locomotion_locomotion.cpp.o obj/src_subsystems_state_prediction_state_prediction.cpp.o obj/src_subsystems_tick_scheduler_tick_scheduler.cpp.o obj/src_subsystems_tick_scheduler_tick_scheduler.hpp.o obj/src_subsystems_vector_targeting_vector_targeting.cpp.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS)  -c $< -o $@
 
@@ -304,6 +304,14 @@ obj/src_subsystems_active_deflection_active_deflection.hpp.o: src/subsystems/act
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS) -x c++ -c $< -o $@
 
+obj/src_subsystems_proximity_fuze_proximity_fuze.cpp.o: src/subsystems/proximity_fuze/proximity_fuze.cpp obj/src_core_entity_cache.hpp.o obj/src_core_math.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/src_sdk_classes_building.hpp.o obj/src_sdk_classes_player.hpp.o obj/src_sdk_classes_weapon.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/src_sdk_interfaces_convar_system.hpp.o obj/src_sdk_interfaces_engine_trace.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/src_sdk_interfaces_global_vars.hpp.o obj/std.compat.o obj/src_subsystems_proximity_fuze_proximity_fuze.hpp.o
+	@mkdir -p obj gcm.cache
+	$(CC) $(CFLAGS)  -c $< -o $@
+
+obj/src_subsystems_proximity_fuze_proximity_fuze.hpp.o: src/subsystems/proximity_fuze/proximity_fuze.hpp obj/src_core_sys.hpp.o obj/src_core_vec.hpp.o obj/src_sdk_interfaces_client.hpp.o obj/std.compat.o
+	@mkdir -p obj gcm.cache
+	$(CC) $(CFLAGS) -x c++ -c $< -o $@
+
 obj/src_subsystems_camera_frustum_camera_frustum.cpp.o: src/subsystems/camera_frustum/camera_frustum.cpp obj/src_core_math.hpp.o obj/src_core_sys.hpp.o obj/src_gui_config.hpp.o obj/src_sdk_classes_player.hpp.o obj/src_sdk_interfaces_engine_trace.hpp.o obj/src_sdk_interfaces_entity_list.hpp.o obj/src_sdk_interfaces_input.hpp.o obj/std.compat.o
 	@mkdir -p obj gcm.cache
 	$(CC) $(CFLAGS)  -c $< -o $@
@@ -474,6 +482,8 @@ MODULE_OBJS = $(STD_OBJS) \
   obj/src_sdk_interfaces_surface.hpp.o \
   obj/src_subsystems_active_deflection_active_deflection.cpp.o \
   obj/src_subsystems_active_deflection_active_deflection.hpp.o \
+  obj/src_subsystems_proximity_fuze_proximity_fuze.cpp.o \
+  obj/src_subsystems_proximity_fuze_proximity_fuze.hpp.o \
   obj/src_subsystems_camera_frustum_camera_frustum.cpp.o \
   obj/src_subsystems_graph_navigation_draw_navmesh.cpp.o \
   obj/src_subsystems_graph_navigation_graph_navigation.cpp.o \

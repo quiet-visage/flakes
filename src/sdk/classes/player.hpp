@@ -357,6 +357,19 @@ public:
     return in_cond_original(get_shared(), TF_COND_ZOOMED);
   }
 
+  bool is_cloaked(void) {
+    return this->in_cond(TF_COND_STEALTHED) ||
+           this->in_cond(TF_COND_STEALTHED_BLINK) ||
+           this->in_cond(TF_COND_STEALTHED_USER_BUFF);
+  }
+
+  bool is_disguised(void) {
+    return this->in_cond(TF_COND_DISGUISED) ||
+           this->in_cond(TF_COND_DISGUISING) ||
+           this->in_cond(TF_COND_DISGUISED_AS_DISPENSER) ||
+           this->in_cond(TF_COND_DISGUISE_WEARINGOFF);
+  }
+
   bool is_ducking(void) {
     return this->get_flags() & FL_DUCKING;
   }

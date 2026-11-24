@@ -93,6 +93,25 @@ struct ActiveDeflectionConfig {
   } projectiles;
 };
 
+struct ProximityFuzeConfig {
+  bool master = false;
+
+  key_button key = {-SDL_BUTTON_X1, false};
+  bool use_key = false;
+
+  float radius = 146.0f;
+  bool check_visibility = true;
+  bool check_arm_time = true;
+
+  bool target_players = true;
+  bool target_buildings = true;
+
+  bool ignore_friends = true;
+  bool ignore_invulnerable = true;
+  bool ignore_cloaked = false;
+  bool ignore_disguised = false;
+};
+
 struct SpatialTelemetryConfig {
   bool master = false;
   bool observer_overlay = false;
@@ -272,6 +291,7 @@ struct DiagnosticsConfig {
 struct Config {
   VectorTargetingConfig targeting;
   ActiveDeflectionConfig deflection;
+  ProximityFuzeConfig proximity_fuze;
   SpatialTelemetryConfig telemetry;
   MaterialOverrideConfig materials;
   ViewportConfig viewport;

@@ -54,7 +54,7 @@ inline void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
 
   case FRAME_NET_UPDATE_END:
     {
-      if (!config.targeting.master && !config.deflection.master && !config.telemetry.master && !config.navigation.master) {
+      if (!config.targeting.master && !config.deflection.master && !config.telemetry.master && !config.navigation.master && !config.proximity_fuze.master) {
 	break;
       }
 
@@ -97,6 +97,11 @@ inline void frame_stage_notify_hook(void* me, ClientFrameStage current_stage) {
 
 	case class_id::SNIPER_DOT:
 	  entity_cache[class_id::SNIPER_DOT].push_back(entity); break;
+
+	case class_id::DISPENSER:
+	case class_id::SENTRY:
+	case class_id::TELEPORTER:
+	  entity_cache[class_id::BUILDING].push_back(entity); break;
 
 	default:
 	  if (entity->get_projectile_type() != projectile_type::NONE) {
